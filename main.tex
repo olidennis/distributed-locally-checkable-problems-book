@@ -1,0 +1,178 @@
+\documentclass[11pt,oneside]{book}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
+
+ \newcommand{\poly}{\operatorname{poly}}
+
+\title{Locally Checkable Problems\\in Distributed Computing}
+\author{Dennis Olivetti}
+\date{Last Update: \today}
+
+\begin{document}
+
+\frontmatter
+\hypersetup{pageanchor=false}
+\maketitle
+\clearpage
+\hypersetup{pageanchor=true}
+\tableofcontents
+
+\mainmatter
+\chapter{Introduction}
+The goal of this book is to provide an overview of recent results about locally checkable problems in the distributed setting. 
+Locally checkable problems are problem for which, if we are given a solution, we can efficiently check its validity. 
+We will mainly consider the LOCAL model of distributed computing, a synchronous message-passing model, where a graph represents a communication network, and neither the size of the messages nor the computational power of the machines is restricted.
+The considered complexity measure is the number of communication rounds required to solve a given problem.
+We will address the following topics:
+\begin{itemize}
+    \item Distributed Complexity Theory. 
+    \begin{itemize}
+        \item What are the possible distributed time complexities of locally checkable problems?
+        \item Does randomness help? How much? Is shared randomness more powerful than private randomness? How about quantum?
+        \item Can we automate our work, that is, can we automatically determine the complexity of a given problem?
+    \end{itemize}
+    \item Lower Bound Techniques.
+    \begin{itemize}
+        \item We will mainly talk about the round elimination technique, which has been used to prove many lower bounds over the years.
+        \item We will discuss other techniques, such as Mark's technique, KMW, and indistinguishability arguments.
+    \end{itemize}
+    \item Connections with other fields.
+    \begin{itemize}
+        \item There are deep connections between the distributed setting and a mathematical field called \emph{descriptive combinatorics}.
+        \item There are deep connetions bewtween the distributed setting and \emph{finitary factors of iid processes}, a topic coming from the area of analysis of randomized processes.
+    \end{itemize}
+\end{itemize}
+
+
+\chapter{Preliminaries}
+\section{The LOCAL model}
+We model a network as a graph $G = (V,E)$, where the nodes represent machines, and the edges represent communication links. Nodes may be assigned unique IDs.
+This model works as follows:
+\begin{itemize}
+    \item Time proceeds in synchronous steps (machines share a clock).
+    \item At the beginning, each node only knows its own input and its degree. The input of a node can be, e.g., its ID, the knowledge of the size $n= |V|$ of the graph, the maximum degree $\Delta$, and/or some additional problem-specific inputs.
+    \item Then, computation proceeds in rounds. At each round, each node can exchange messages with its neighbors, and update its own local state (each node has its own private memory, no memory is shared between nodes).
+    \item Each node must eventually produce an output.
+\end{itemize}
+The complexity of an algorithm is the worst-case number of rounds that it requires to terminate. This complexity is often measured as a function of $n$ and $\Delta$.
+
+In the LOCAL model, messages can be arbitrarily large, and computation is unbounded. There are many variants of the LOCAL model that one can consider, and they may have different power:
+\begin{itemize}
+    \item Is $n$ known by the nodes? Is a polynomial upper bound on $n$ known?
+    \item Do nodes have IDs?
+    \item Do nodes have access to randomness? How much randomness? A finite or infinite bit-string? Do we require Las-Vegas or Monte-Carlo algorithms?
+    \item Messages are arbitrarily large, but are they finite? Can we e.g.\ send real numbers?
+    \item Can nodes locally perform uncomputable computation?
+\end{itemize}
+
+
+\section{Locally Checkable Problems}
+Locally Checkable Problems (LCP) are problems for which it is easy to check whether a given solution is valid. In more detail, a locally checkable problem is a problem for which there exists a constant-time distributed algorithm called \emph{verifier} satisfying that, given a solution:
+\begin{itemize}
+    \item If the solution is correct, then the algorithm outputs \emph{yes} on all nodes.
+    \item If the solution is incorrect, then the algorithm outputs \emph{no} on at least one node.
+\end{itemize}
+Many interesting problems are locally checkable, for example:
+\begin{itemize}
+    \item Coloring problems. For example, consider the $(\Delta+1)$-coloring problem, and assume that the verifier knows $\Delta$. The verifier requires $1$ round of communication, in which it checks that the color of the current node is in $\{1,\ldots,\Delta+1\}$, and that it is different from the color of the neighbors.
+    \item Maximal independent set. The verifier needs to check that if the current node is in, then all its neighbors must be out, and that if the current node is out, then at least one neighbor is in. Observe that the \emph{Maximum} independent set problem is not locally checkable.
+    \item Single source shortest paths (SSSP), or at least some variants of it. Consider for example the variant in which each node outputs its own distance and a pointer to the parent. Then the verifier needs to check that the distance of the parent, plus the weight of the edge connecting the node to the parent, is equal to the distance of the node, and that no other neighbor would give a strictly smaller distance.
+    \item Sinkless orientation, that is, orienting the edges so that each node does not have all edges oriented incoming.
+    \item List-coloring, where each node is given a list of colors as input, and each node needs to output a color from its own list, such that the resulting coloring is proper.
+\end{itemize}
+
+\section{LCLs}
+In \cite{naor-stockmeyer-1995-what-can-be-computed-locally}, a restricted class of LCP, called Locally Checkable Labelings (LCLs), was introduced. This class is restricted enough so that we can prove interesting results, but wide enough to still contain many problems of interest. In more detail, LCLs are LCPs with the following restrictions:
+\begin{itemize}
+    \item The number of input and output labels is constant (i.e., it does not depend on $n$).
+    \item It is assumed that $\Delta \in O(1)$.
+\end{itemize}
+An example of a problem that is an LCP but not an LCL is SSSP, because nodes need to output distances, and distances could depend on $n$.
+
+The nice thing about this class of problems is that each problem has a finite description:
+\begin{itemize}
+    \item Let $r$ be the number of rounds taken by the verifier. Clearly, the output of the verifier can only depend on things at distance at most $r$ from the node. 
+    \item Since $\Delta$ and $r$ are in $O(1)$, and the number of labels is constant, there is a finite number of graphs that the verifier could see.
+    \item Thus, we can list the ones that the verifier would accept. Hence, we can describe a problem by listing the accepted neighborhoods.
+\end{itemize}
+
+\section{Distributed Complexity Theory}
+Being LCLs so restrictive, researchers managed to prove many interesting properties about them. Moreover, many techniques that have been initially developed to understand specific LCLs, have then been generalized to understand problems that fall outside of this class (e.g., round elimination).
+Common questions are the following:
+\begin{itemize}
+    \item What are possible LCL complexities?
+    \item Can we automatically decide the complexity of a given LCL?
+    \item Does shared/private randomness help?
+    \item Does quantum help?
+\end{itemize}
+
+\subsection{Paths and Cycles}
+In the case of paths and cycles, LCLs have 3 possible complexities \cite{balliu-brandt-etal-2019-the-distributed-complexity-of,brandt-hirvonen-etal-2017-lcl-problems-on-grids,chang-studeny-suomela-2021-distributed-graph-problems}:
+\begin{itemize}
+    \item $O(1)$. Problems with this complexity often admit very easy algorithms. In the case of directed cycles with no inputs, we even know that all problems with this complexity can be solved in $0$ rounds.
+    \item $\Theta(\log^\star n)$. Problems with this complexity require breaking symmetry, but do not require global coordination. Examples are $3$-coloring and MIS.
+    \item $\Theta(n)$ and unsolvable problems. Problems with this complexity require global coordination. An example is $2$-coloring, where, by fixing the output of a single node, we are forcing the output on all other nodes.
+\end{itemize}
+Surprisingly, LCLs on paths and cycles cannot have any other possible complexity, and randomization never helps. This fact has the following interesting implication: you can be sloppy. Suppose you prove that your favourite problem can be solved in $O(\log n)$ rounds via a simple randomized algorithm. You automatically get that the problem can also be solved in $O(\log^\star n)$ by a more clever algorithm, deterministically.
+
+Another surprising fact is that everything is decidable, even for LCLs with inputs. In other words, we can feed the description of an LCL to a computer program, and the program is going to output the correct complexity, and a description of an optimal algorithm.
+
+\subsection{Trees}
+In the case of trees, there are the same possible complexities of paths and cycles, plus some more \cite{chang-pettie-2019-a-time-hierarchy-theorem-for-the,balliu-brandt-etal-2018-almost-global-problems-in-the,chang-2020-the-complexity-landscape-of-distributed}:
+\begin{itemize}
+    \item $\Theta(\log n)$ deterministic. These problems can either be $\Theta(\log n)$ randomized, or $\Theta(\log \log n)$ randomized.
+    \item $\Theta(n^{1/k})$ for any $k \in \mathbb{N}^{+}$. For these problems, randomness does not help.
+\end{itemize}
+No other complexity is possible. Moreover, it is decidable whether a problem can be solved in $O(\log n)$ or not, and in the latter case, what the exact value of $k$ is. Summarizing, some things are still decidable, and randomness can only help exponentially or not at all, and if it helps, it only helps for problems with deterministic complexity $\Theta(\log n)$. A major open question is whether it is decidable if a problem is $\Omega(\log n)$.
+
+\subsection{General graphs}
+In general graphs, things are entirely different. For deterministic complexities, the following is known \cite{chang-kopelowitz-pettie-2016-an-exponential-separation,balliu-hirvonen-etal-2018-new-classes-of-distributed,balliu-brandt-etal-2018-almost-global-problems-in-the}:
+\begin{itemize}
+    \item There are problems with complexity $O(1)$.
+    \item No problem with complexity in $\omega(1)-o(\log \log^\star n)$ exists.
+    \item The region $\Omega(\log \log^\star n)-O(\log^\star n)$ is dense: informally, for any complexity in this range, we can find a problem with a complexity that is arbitrarily near to it.
+    \item No problem with complexity in $\omega(\log^\star n)-o(\log n)$ exists.
+    \item The region $\Omega(\log n)$ is dense.
+\end{itemize}
+In the case of general graphs, undecidability results are known. Very informally, they are proved by showing that it is possible to define problems that require outputting the execution of a Turing machine, and whether the problem is constant or not depends on the running time of the machine. About randomness, a surprising connection is known: if a problem has randomized complexity $o(\log n)$, then it has randomized complexity $O(T_\mathrm{LLL})$, where $T_\mathrm{LLL}$ is the distributed time complexity of the constructive Lov\'asz Local Lemma \cite{chang-pettie-2019-a-time-hierarchy-theorem-for-the}. It is known that $T_\mathrm{LLL}$ is in $\Omega(\log \log n)$ and in $O(\poly \log \log n)$, and a big open question is determining the exact complexity of LLL. Moreover, it is known that randomness can help in different regions. For example, it is known that, for all $k \in \mathbb{N}$, there are problems with deterministic complexity $\Theta(\log^{k+1} n)$ and randomized complexity $\Theta(\log^k n \log \log n)$ \cite{balliu-brandt-etal-2020-how-much-does-randomness-help}.
+
+\section{Easy vs Hard}
+A central question about LCLs is to determine whether a problem is \emph{easy} or \emph{hard}, which we define as follows.
+\begin{itemize}
+    \item Easy problems are problems that can be solved in $O(\log^\star n)$. We call these problems easy because, in order to solve them, we do not need to exploit structural properties of the graph, and only some basic symmetry breaking is required. In some sense, these problems are truly local.
+    \item If a problem cannot be solved in $O(\log^\star n)$, then we know it must have deterministic complexity $\Omega(\log n)$. If a problem falls in this latter case, then we say that the problem is hard. Problems of this type cannot be solved with local information: an algorithm running in $\Omega(\log n)$ rounds (for some large-enough constant hidden in the $\Omega$ notation) is guaranteed to see at least a node of degree $\le 2$ or a cycle. Algorithms of this type are not truly local; they need to see \emph{something} in order to be able to solve the problem. Moreover, problems of this type have randomized complexity $\Omega(\log \log n)$. Observe that this is the sweet spot to obtain high-probability guarantees: either the algorithm sees \emph{something} in the structure of the graph that it may be able to exploit, or it sees $\Omega(\log n)$ nodes. In the latter case, consider some randomized process that has constant success probability independently on each node. By seeing $\Omega(\log n)$ nodes, the algorithm will see a successful event with high probability, which it may be able to exploit.
+\end{itemize}
+
+\section{Black-White formalism}
+An important technique used to prove lower bounds in the LOCAL model is the Round Elimination technique \cite{brandt-2019-an-automatic-speedup-theorem-for}. This technique does not directly work on LCLs, but requires the problem to be described with a specific language, called black-white formalism. It turns out that, at least on trees, this is not a restriction: we can convert any given LCL into a problem in the black-white formalism, and the two problems are equivalent, up to $O(1)$ additive rounds \cite{balliu-censor-hillel-etal-2021-locally-checkable}. On general graphs, problems in the black-white formalism are a strict subclass of LCLs, but most natural problems can anyway be expressed in the black-white formalism.
+
+
+\chapter{Distributed Complexity Theory}
+[TODO: summarize all papers about LCLs, with proof sketches]
+
+\chapter{Connections with Other Fields}
+[TODO: descriptive combinatorics, ffiid]
+
+\chapter{Black-White Formalism}
+[TODO: define bw formalism, give plenty of examples]
+
+\chapter{Round Elimination}
+[TODO: define RE, explain techniques, ...]
+
+\chapter{Other Lower Bound Techniques}
+[TODO: Marks, KMW, indistinguishability, ...]
+
+
+\backmatter
+
+\bibliographystyle{plain}
+\bibliography{da}
+
+\end{document}
