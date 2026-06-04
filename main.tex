@@ -483,7 +483,9 @@ In other words, we define MIS (on regular graphs) as the family of problems, con
 & \M \s \O\P &\\
 & \O \s \O &
 \end{flalign*}
-Yes, we just replaced $\Delta$ with a $3$. The subtle difference is that we can apply round elimination on problems, not on family of problems. We will see, when discussing round elimination, why this complicates things.
+Yes, we just replaced $\Delta$ with a $3$.
+However, think about defining, e.g., $\Delta$-coloring. Then it is not as easy as making some exponents depend on $\Delta$. We would now have that the number of configurations itself depends on $\Delta$, so we would need a new language for describing our problems.
+This makes it hard to apply the round elimination technique: as we will see, this technique, as is, can be applied on a given problem, but if we want to apply it on an entire family of problems at once, things get more complicated. 
 However, this also shows how we can step outside the LCLs world:
 \begin{itemize}
     \item According to the notation that we just introduced, MIS is definitely \emph{not} an LCL. It is an infinite family of problems, one for each maximum degree $\Delta$.
