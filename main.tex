@@ -7,9 +7,19 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{subcaption}
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
+\usepackage{cleveref}
+\usepackage[a4paper,margin=2.5cm]{geometry}
 
- \newcommand{\poly}{\operatorname{poly}}
+\newcommand{\poly}{\operatorname{poly}}
+
+\newcommand{\A}{\mathsf{A}}
+\newcommand{\B}{\mathsf{B}}
+\newcommand{\I}{\mathsf{I}}
+\renewcommand{\O}{\mathsf{O}}
+\newcommand{\s}{\mspace{5mu}}
 
 \title{Locally Checkable Problems\\in Distributed Computing}
 \author{Dennis Olivetti}
@@ -161,6 +171,85 @@ An important technique used to prove lower bounds in the LOCAL model is the Roun
 [TODO: descriptive combinatorics, ffiid]
 
 \chapter{Black-White Formalism}
+The black-white formalism allows to define (some) LCLs in a concise way.
+While there are many variants that we will consider later, the most basic setting is the following:
+\begin{itemize}
+    \item We assume that we are in a $(\Delta,\delta)$-biregular graph, where white nodes have degree $\Delta$ and black nodes have degree $\delta$. 
+    \item There are no input labels.
+    \item We need to output one label on each edge.
+    \item We have a list of \emph{white allowed configurations}, which are multisets of size $\Delta$ that denote valid labelings of the edges incident to the white nodes.
+    \item We have a list of \emph{black allowed configurations}, which are multisets of size $\delta$ that denote valid labelings of the edges incident to the black nodes.
+\end{itemize}
+In other words, a problem $\Pi$ in the black-white formalism is a triple $(\Sigma, W,B)$, where $\Sigma$ is the (finite) set of possible labels, $W$ is a finite multiset, where each multiset has size $\Delta$, and $B$ is a multiset, where each multiset has size $\delta$.
+Note that the definition of a problem $\Pi$ is just this, in particular $\Sigma$ is finite and there is no $n$ involved: we cannot define problems where the number of labels depends the size of the graph.
+
+\section{Sinkless Orientation on Bipartite Graphs}
+Let's see a simple example. Consider the following setting: we have the promise that our graph is $3$-regular and $2$-colored. We want to define a problem that requires to orient the edges of the graph such that no node is a sink, that is, each node must have at least one edge oriented outwards.
+We can define this problem in the black-white formalism as follows.
+\begin{itemize}
+    \item $\Sigma = \{\A,\B\}$
+    \item $W = \{\{\A,\A,\A\},\{\A,\A,\B\},\{\A,\B,\B\}\}$
+    \item $B = \{\{\B,\B,\B\},\{\B,\B,\A\},\{\B,\A,\A\}\}$
+\end{itemize}
+The intuition is the following:
+\begin{itemize}
+    \item Each edge gets exactly one label, $\A$ or $\B$. If an edge is labeled $\A$, then the edge is oriented from the white node to the black node, while if an edge is labeled $\B$, then the edge is oriented from the black node to the white node.
+    \item The white constraint $W$ allows every configuration of $3$ labels that contains at least one $\A$, that is, at least one edge oriented away from the white node.
+    \item The black constraint $B$ allows every configuration of $3$ labels that contains at least one $\B$, that is, at least one edge oriented away from the black node.
+\end{itemize}
+In order to describe problems in the black-white formalism more compactly, we use the following notation.
+Instead of writing, e.g., $\{\A,\A,\A\}$, we simply write $\A \s \A \s \A$, or even $\A^3$. Hence, the white constraint becomes $\{\{\A^3\},\{\A^2 \s \B\},\{\A \s \B^2\}\}$. To make the notation even more compact, we write these three allowed configurations as a single one: $\A \s [\A\B]^2$. Think of it as a regular expression: we pick an $\A$, and then we can pick $\A$ or $\B$, twice. We call this type of configurations, \emph{condensed configurations}. Sometimes we even omit the square brackets, and we just write $\A \s \A\B^2$. This is the format that \emph{round eliminator} (the tool that automatically applies the round elimination technique) expects.
+In order to describe a whole problem compactly, we omit $\Sigma$, we write a condensed configuration on each line, and we separate the white and the black constraint by an empty line. Hence, sinkless orientation is compactly defined as follows:
+\begin{flalign*}
+& \A \s \A\B^2 &\\
+\\
+& \B \s \A\B^2 &
+\end{flalign*}
+See \Cref{fig:bipartite-so} for an example of a solution of bipartite sinkless orientation encoded in the black-white formalism.
+
+
+\begin{figure}[ht]
+\centering
+\begin{subfigure}{0.49\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figs/bipartite so 1.pdf}
+\caption{A solution of bipartite sinkless orientation on bipartite $2$-colored graphs.}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.49\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figs/bipartite so 3.pdf}
+\caption{The same solution, encoded in the black-white formalism.}
+\end{subfigure}
+\caption{On the left, a solution of bipartite sinkless orientation as one would naturally imagine it. On the right, the same solution encoded in the black-white formalism. Each edge oriented from a white node to a black node gets the label $\A$, while each edge oriented from a black node to a white node gets the label $\B$.}
+\label{fig:bipartite-so}
+\end{figure}
+
+\section{Node-Edge Formalism}
+The above example was in bipartite $2$-colored graphs. However, the same formalism can be used to define problems in standard graphs. The idea is to just take $\delta = 2$. Observe that, in this case, each black node is in the middle of an edge connecting two white nodes. Let's just ignore these black nodes and pretend they do not exist. We get the following setting:
+\begin{itemize}
+    \item We assume that we are in a $\Delta$-regular graph. 
+    \item There are no input labels.
+    \item We need to output one label on each \emph{half-edge} (node-edge pair). In other words, we need to output two labels for each edge, one from each side.
+    \item We have a list of \emph{allowed node configurations}, which are multisets of size $\Delta$ that denote valid labelings of the edges incident to the nodes.
+    \item We have a list of \emph{allowed edge configurations}, which are multisets of size $2$ that denote valid labelings of the edges.
+\end{itemize}
+This special case of the black-white formalism is called \emph{node-edge formalism}.
+
+\section{Sinkless Orientation}
+In the node-edge formalism, we can define sinkless orientation as follows:
+\begin{flalign*}
+& \O \s \I\O^2 &\\
+\\
+& \I \s \O &
+\end{flalign*}
+In other words:
+\begin{itemize}
+    \item The labels are $\I$ (oriented incoming) and $\O$ (oriented outgoing).
+    \item Each node must have at least one $\O$, that is, one edge oriented outgoing. But also two or three outgoing edges are fine, so all choices over the regular expression $\O \s \I\O^2$, that is, $\O \s \I \s I$, $\O \s \O \s I$, $\O \s \I \s \O$, $\O \s \O \s \O$ are allowed. Note that $\O \s \O \s I$ and $\O \s \I \s \O$ are the same multiset, the order does not matter.
+    \item Edges must be properly oriented: if a node labels an edge $\I$, then the other endpoint of the edge must label the edge $\O$, and vice versa. We do not write $\O \s \I$ in the allowed configurations because it is the same multiset as $\I \S \O$, and the order does not matter.
+\end{itemize}
+
 [TODO: define bw formalism, give plenty of examples]
 
 \chapter{Round Elimination}
