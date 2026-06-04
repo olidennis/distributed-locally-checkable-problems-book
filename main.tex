@@ -17,8 +17,14 @@
 
 \newcommand{\A}{\mathsf{A}}
 \newcommand{\B}{\mathsf{B}}
+\newcommand{\G}{\mathsf{G}}
 \newcommand{\I}{\mathsf{I}}
+\newcommand{\M}{\mathsf{M}}
 \renewcommand{\O}{\mathsf{O}}
+\renewcommand{\P}{\mathsf{P}}
+\newcommand{\Q}{\mathsf{Q}}
+\newcommand{\R}{\mathsf{R}}
+\newcommand{\V}{\mathsf{V}}
 \newcommand{\s}{\mspace{5mu}}
 
 \title{Locally Checkable Problems\\in Distributed Computing}
@@ -177,14 +183,14 @@ While there are many variants that we will consider later, the most basic settin
     \item We assume that we are in a $(\Delta,\delta)$-biregular graph, where white nodes have degree $\Delta$ and black nodes have degree $\delta$. 
     \item There are no input labels.
     \item We need to output one label on each edge.
-    \item We have a list of \emph{white allowed configurations}, which are multisets of size $\Delta$ that denote valid labelings of the edges incident to the white nodes.
-    \item We have a list of \emph{black allowed configurations}, which are multisets of size $\delta$ that denote valid labelings of the edges incident to the black nodes.
+    \item We have a set (called \emph{white constraint}) of \emph{white allowed configurations}, which are multisets of size $\Delta$ that denote valid labelings of the edges incident to the white nodes.
+    \item We have a set (\emph{black constraint}) of \emph{black allowed configurations}, which are multisets of size $\delta$ that denote valid labelings of the edges incident to the black nodes.
 \end{itemize}
 In other words, a problem $\Pi$ in the black-white formalism is a triple $(\Sigma, W,B)$, where $\Sigma$ is the (finite) set of possible labels, $W$ is a finite multiset, where each multiset has size $\Delta$, and $B$ is a multiset, where each multiset has size $\delta$.
 Note that the definition of a problem $\Pi$ is just this, in particular $\Sigma$ is finite and there is no $n$ involved: we cannot define problems where the number of labels depends the size of the graph.
 
 \section{Sinkless Orientation on Bipartite Graphs}
-Let's see a simple example. Consider the following setting: we have the promise that our graph is $3$-regular and $2$-colored. We want to define a problem that requires to orient the edges of the graph such that no node is a sink, that is, each node must have at least one edge oriented outwards.
+Let's see a simple example (illustrated in \Cref{fig:bipartite-so}). Consider the following setting: we have the promise that our graph is $3$-regular and $2$-colored. We want to define a problem that requires to orient the edges of the graph such that no node is a sink, that is, each node must have at least one edge oriented outwards.
 We can define this problem in the black-white formalism as follows.
 \begin{itemize}
     \item $\Sigma = \{\A,\B\}$
@@ -205,18 +211,18 @@ In order to describe a whole problem compactly, we omit $\Sigma$, we write a con
 \\
 & \B \s \A\B^2 &
 \end{flalign*}
-See \Cref{fig:bipartite-so} for an example of a solution of bipartite sinkless orientation encoded in the black-white formalism.
+
 
 
 \begin{figure}[ht]
 \centering
-\begin{subfigure}{0.49\textwidth}
+\begin{subfigure}[t]{0.49\textwidth}
 \centering
 \includegraphics[width=\linewidth]{figs/bipartite so 1.pdf}
 \caption{A solution of bipartite sinkless orientation on bipartite $2$-colored graphs.}
 \end{subfigure}
 \hfill
-\begin{subfigure}{0.49\textwidth}
+\begin{subfigure}[t]{0.49\textwidth}
 \centering
 \includegraphics[width=\linewidth]{figs/bipartite so 3.pdf}
 \caption{The same solution, encoded in the black-white formalism.}
@@ -226,7 +232,7 @@ See \Cref{fig:bipartite-so} for an example of a solution of bipartite sinkless o
 \end{figure}
 
 \section{Node-Edge Formalism}
-The above example was in bipartite $2$-colored graphs. However, the same formalism can be used to define problems in standard graphs. The idea is to just take $\delta = 2$. Observe that, in this case, each black node is in the middle of an edge connecting two white nodes. Let's just ignore these black nodes and pretend they do not exist. We get the following setting:
+The above example was in bipartite $2$-colored graphs. However, the same formalism can be used to define problems in standard graphs. The idea is to just take $\delta = 2$ (see \Cref{fig:node-edge}). Observe that, in this case, each black node is in the middle of an edge connecting two white nodes. Let's just ignore these black nodes and pretend they do not exist. We get the following setting:
 \begin{itemize}
     \item We assume that we are in a $\Delta$-regular graph. 
     \item There are no input labels.
@@ -236,8 +242,26 @@ The above example was in bipartite $2$-colored graphs. However, the same formali
 \end{itemize}
 This special case of the black-white formalism is called \emph{node-edge formalism}.
 
+\begin{figure}[ht]
+\centering
+\begin{subfigure}[t]{0.49\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figs/node-edge 1.pdf}
+\caption{A $(3,2)$-biregular graph.}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.49\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figs/node-edge 2.pdf}
+\caption{A $3$-regular graph.}
+\end{subfigure}
+\caption{By considering the graph on the left, and ignoring black nodes, we obtain the graph on the right. Observe that a labeling of the edges of the graph on the left corresponds to a labeling of the half-edges of the graph on the right.}
+\label{fig:node-edge}
+\end{figure}
+
 \section{Sinkless Orientation}
-In the node-edge formalism, we can define sinkless orientation as follows:
+Let's see an example of a problem encoded in the node-edge formalism (see \Cref{fig:so}).
+We can define sinkless orientation as follows:
 \begin{flalign*}
 & \O \s \I\O^2 &\\
 \\
@@ -246,11 +270,230 @@ In the node-edge formalism, we can define sinkless orientation as follows:
 In other words:
 \begin{itemize}
     \item The labels are $\I$ (oriented incoming) and $\O$ (oriented outgoing).
-    \item Each node must have at least one $\O$, that is, one edge oriented outgoing. But also two or three outgoing edges are fine, so all choices over the regular expression $\O \s \I\O^2$, that is, $\O \s \I \s I$, $\O \s \O \s I$, $\O \s \I \s \O$, $\O \s \O \s \O$ are allowed. Note that $\O \s \O \s I$ and $\O \s \I \s \O$ are the same multiset, the order does not matter.
-    \item Edges must be properly oriented: if a node labels an edge $\I$, then the other endpoint of the edge must label the edge $\O$, and vice versa. We do not write $\O \s \I$ in the allowed configurations because it is the same multiset as $\I \S \O$, and the order does not matter.
+    \item Each node must have at least one $\O$, that is, one edge oriented outgoing. But also two or three outgoing edges are fine, so all choices over the regular expression $\O \s \I\O^2$, that is, $\O \s \I \s \I$, $\O \s \O \s \I$, $\O \s \I \s \O$, $\O \s \O \s \O$ are allowed. Note that $\O \s \O \s I$ and $\O \s \I \s \O$ are the same multiset, because the order does not matter.
+    \item Edges must be properly oriented: if a node labels an edge $\I$, then the other endpoint of the edge must label the edge $\O$, and vice versa. We do not write $\O \s \I$ in the list of allowed configurations because it is the same multiset as $\I \s \O$, and the order does not matter.
 \end{itemize}
 
-[TODO: define bw formalism, give plenty of examples]
+\begin{figure}[ht]
+\centering
+\begin{subfigure}[t]{0.49\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figs/sinkless 1.pdf}
+\caption{A solution of sinkless orientation.}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.49\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figs/sinkless 3.pdf}
+\caption{The same solution, encoded in the node-edge formalism.}
+\end{subfigure}
+\caption{On the left, a solution of sinkless orientation as one would naturally imagine it. On the right, the same solution encoded in the node-edge formalism. Each edge gets the label $\O$ on the side oriented outgoing and $\O$ on the side oriented incoming.}
+\label{fig:so}
+\end{figure}
+
+\section{Coloring}
+Let's see another example, $3$-coloring $3$-regular graphs (see \Cref{fig:coloring}).
+We can define it in the node-edge formalism as follows.
+\begin{flalign*}
+& \R^3 &\\
+& \G^3 &\\
+& \B^3 &\\
+\\
+& \R \s \G\B &\\
+& \G \s \B &
+\end{flalign*}
+In other words:
+\begin{itemize}
+    \item Nodes can be colored red, green, or blue.
+    \item Nodes colored, e.g., red, must output $\R$ on each of the three incident half-edges.
+    \item On the edges, any configuration not consisting of the same color twice is allowed, that is, $\R \s \G$, $\R \s \B$, and $\G \s \B$ are allowed, but, e.g., $\R \s \R$ is not.
+\end{itemize}
+
+\begin{figure}[ht]
+\centering
+\begin{subfigure}[t]{0.49\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figs/coloring.pdf}
+\caption{A solution of $3$-coloring in $3$-regular graphs.}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.49\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figs/coloring2.pdf}
+\caption{An example of encoding in the node-edge formalism. The central node would, e.g., output $\R \s \R \s \R$.}
+\end{subfigure}
+\caption{A solution of $3$-coloring in $3$-regular graphs, as one would naturally imagine it, and how it is encoded in the node-edge formalism.}
+\label{fig:coloring}
+\end{figure}
+
+\section{Maximal Independent Set}
+Let's now consider a problem that is slightly harder to encode, Maximal Independent Set (MIS). In this problem, we need to select a subset of nodes that satisfy independence and maximality. While it may feel natural to try to encode it by using two labels ($\I$ and $\O$, which stand for ``in the set'' and ``out, not in the set''), this is not possible. 
+In more detail, we could try to require nodes in the set to output $\I$ on each incident half-edge, and nodes not in the set to output $\O$ on each incident half-edge. Note that this would not work:
+\begin{itemize}
+    \item There are valid solutions in which two nodes not in the set are neighbors, and hence we would need to allow $\O \s \O$ on the edges.
+    \item Hence, the node constraint contains the configuration $\O \s \ldots \s \O$, while the edge constraint contains the configuration $\O \s \O$.
+    \item This implies that the obtained problem can be solved in $0$ rounds of communication, by outputting $\O$ everywhere.
+    \item The obtained problem is not \emph{maximal independent set}, but just \emph{independent set}!
+\end{itemize}
+In other words, we need one more label to ensure maximality. We can define MIS in the node-edge formalism, on $3$-regular graphs, as follows.
+\begin{flalign*}
+& \M^3 &\\
+& \P \s \O^2 &\\
+\\
+& \M \s \O\P &\\
+& \O \s \O &
+\end{flalign*}
+That is, MIS is encoded as follows:
+\begin{itemize}
+    \item Nodes in the set output $\M^3$.
+    \item Nodes not in the set need to \emph{prove} that they have at least one neighbor in the set, by outputting $\P$ towards them. On the other two edges, they output $\O$.
+    \item On the edges, we can see that $\P$ is only compatible with $\M$ (that is, the configuration $\M \s \P$ is the only one containing $\P$), this ensures maximality. Then, nodes not in the set could have more than one neighbor in the set, and hence we allow $\M \s \O$. Moreover, nodes not in the set could be neighbors, and hence we allow $\O \s \O$.
+\end{itemize}
+See \Cref{fig:mis} for an example.
+\begin{figure}[ht]
+\centering
+\begin{subfigure}[t]{0.49\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figs/mis3.pdf}
+\caption{A solution of MIS.}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.49\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figs/mis.pdf}
+\caption{The same solution, encoded in the node-edge formalism.}
+\end{subfigure}
+\caption{On the left, a solution of MIS in a $3$-regular graph, as one would naturally imagine it. On the right, the same solution encoded in the node-edge formalism. Each node in the set outputs $\M^3$, while each node not in the set outputs $\P$ towards a neighbor that is in the set, and $\O$ towards the other two neighbors.}
+\label{fig:mis}
+\end{figure}
+
+Let's call the usual MIS problem standard-MIS, and the version encoded in the node-edge formalism encoded-MIS.
+It is important to notice that standard-MIS and encoded-MIS are not exactly the same problem:
+\begin{itemize}
+    \item Given a solution to encoded-MIS, we can immediately infer a solution to standard-MIS.
+    \item However, given a solution to standard-MIS, it takes $1$ round of communication to obtain a solution to encoded-MIS, because nodes not in the set would not otherwise know where to output $\P$.
+\end{itemize}
+We need to keep this in mind when proving lower bounds: if we prove that encoded-MIS requires at least $T$ rounds to be solved, we only obtain a lower bound of $T-1$ rounds for standard-MIS. While in the case of MIS it does not matter (asymptotically), for some other problems it could matter, so we have to keep this in mind.
+
+\section{Bipartite Maximal Matching}
+Let's see another example in the black-white formalism, by considering the problem of computing a maximal matching on bipartite $2$-colored graphs (BMM).
+Similarly as in the case of MIS, one may be tempted to encode BMM by using two labels, but this is not possible, we need at least three. We can encode BMM, on $(3,3)$-biregular graphs, as follows:
+\begin{flalign*}
+& \M \s \O^2 &\\
+& \P^3 &\\
+\\
+& \M \s \O\P^2 &\\
+& \O^3 &
+\end{flalign*}
+See \Cref{fig:bmm} for an example. The intuition is the following:
+\begin{itemize}
+    \item Edges that are part of the matching are labeled $\M$.
+    \item Then, if a white node is not matched, it needs to prove that all its neighbors are matched, so it points to all of them, by outputting $\P$ on all its incident edges.
+    \item There are two types of black nodes, matched and unmatched. If a node is matched then it has exactly one edge labeled $\M$, and then it can \emph{accept} pointers. So all its other edges could be $\P$ or $\O$. If a black node is not matched, then it needs to prove that all its white neighbors are matched. We do not need a new type of pointer for this, we can use $\O$, because all non-matched edges incident to white matched nodes are labeled $\O$.
+\end{itemize}
+Note that this is not the only possible way to encode BMM. One could use a more ``symmetric'' and intuitive version, as follows:
+\begin{flalign*}
+& \M \s \P\O^2 &\\
+& \P^3 &\\
+\\
+& \M \s \P\O^2 &\\
+& \O^3 &
+\end{flalign*}
+The intuition is the following:
+\begin{itemize}
+    \item Matched edges get label $\M$, then the other edges are either \emph{white pointers} $\P$ or \emph{black pointers} $\O$.
+    \item If a node is matched, then it outputs exactly one $\M$, and then on the other edges everything else is allowed.
+    \item If a white node is not matched, it outputs white pointers everywhere, that is, $\P^3$.
+    \item If a black node is not matched, it outputs black pointers everywhere, that is, $\O^3$.
+    \item Observe that if a white node is not matched, then all its edges are labeled $\P$, and all black configurations containing $\P$ also contain $\M$. Hence, all black neighbors of the white node are matched. The case of unmatched black nodes is symmetric.
+\end{itemize}
+It turns out that the two variants that we have seen are equivalent, and it is now time to discuss an important detail: who outputs the labels?
+We will use the black-white formalism to prove upper and lower bounds via round elimination. In such a setting, it will be convenient to consider the following computational model:
+\begin{itemize}
+    \item White nodes output labels on their incident edges.
+    \item Black nodes participate in the computation, but they do not output anything.
+    \item Hence, it is the job of the white nodes to output labels that satisfy, at the same time, white and black constraints on all nodes.
+\end{itemize}
+
+Now, a solution for the first variant \emph{is also} a solution for the second variant. A solution for the second variant \emph{can be converted}, without communication, into a solution for the first variant, if we consider the computational model just discussed: matched white nodes just need to change all their $\P$ into $\O$. It is easy to see that the obtained solution is valid.
+
+As a side note, if we enter the second variant of BMM into round eliminator, it automatically transforms the given problem into the first variant, because it sees the $\P$ in the condensed configuration $\M \s \P\O^2$ of the white constraint as useless.
+\begin{figure}[ht]
+\centering
+\begin{subfigure}[t]{0.49\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figs/matching1.pdf}
+\caption{A solution of BMM.}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.49\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figs/matching2.pdf}
+\caption{The same solution, encoded in the black-white formalism.}
+\end{subfigure}
+\caption{On the left, a solution of BMM in a $3$-regular graph, as one would naturally imagine it. On the right, the same solution encoded in the node-edge formalism. Edges in the matching get the label $\M$, then we need to use $\P$ and $\O$ to ensure maximality.}
+\label{fig:bmm}
+\end{figure}
+
+
+\section{Ruling Sets}
+Ruling sets are a family of problems parameterized by two positive integers $\alpha$ and $\beta$. An $(\alpha,\beta)$-ruling set is a set of nodes that satisfies two properties:
+\begin{itemize}
+    \item Nodes in the set are at distance at least $\alpha$ from each other.
+    \item Each node not in the set has a node in the set at distance at most $\beta$.
+\end{itemize}
+Observe that the problem of computing a $(2,1)$-ruling set is the same as MIS. We will now see how to encode $(2,2)$-ruling sets on $3$-regular graphs, in the node-edge formalism.
+\begin{flalign*}
+& \M^3 &\\
+& \P \s \O^2 &\\
+& \Q \s \V^2 &\\
+\\
+& \M \s \P\O &\\
+& \O \s \Q &\\
+& \O\V^2 &
+\end{flalign*}
+In other words:
+\begin{itemize}
+    \item Nodes in the set output $\M^3$, and $\M^2$ is not in the edge constraint, to satisfy independence.
+    \item Nodes not in the set need to output \emph{pointers} to prove maximality. These pointers can be $\P$ or $\Q$. However, $\P$ is only compatible with $\M$, and hence nodes outputting $\P \s \O^2$ must be at distance $1$ from at least one node in the set. Nodes at distance $2$ from nodes in the set output $\Q \s \V^2$, and $\Q$ must point to an $\O$, and hence to a node at distance $1$, ensuring that all nodes outputting $\Q \s \V^2$ are at distance $2$ from nodes in the set. 
+    \item Except for needing to output pointers, there are no further constraints, so on the edges we allow any choice over $\O\V^2$.
+\end{itemize}
+This is not the only way to encode $(2,2)$-ruling sets. We could have for example allowed $\M \s \Q\V$ on the edges, which would allow nodes outputting $\Q \s \V^2$ to be a distance $1$ from nodes in the set.
+With both encodings, it would take $2$ rounds to convert a solution for (standard) $(2,2)$-ruling sets into the version encoded in the node-edge formalism.
+
+If we were to generalize this idea to $(2,\beta)$-ruling sets, for larger $\beta$, we would essentially do it as follows:
+\begin{itemize}
+    \item We require nodes in the set to output $\M^3$.
+    \item For each $1\le i\le \beta$, we would introduce two new labels $\P_i$ and $\O_i$.
+    \item Then, nodes at distance $i$ from the set need to output $\P_i \s \O_i \s \O_i$, and $\P_i$ would need to point to $\O_{i-1}$ (or to $\M$, if $i=1$).
+\end{itemize}
+However, now observe that, in order to convert a $(2,\beta)$-ruling set into a solution of this encoded version, it would take $\beta$ rounds of communication, because nodes not in the set need to figure out their distance from the set.
+We need to be very careful about this when proving lower bounds: suppose we use round elimination to prove an $f(\beta)$ lower bound for the version of the problem encoded in the node-edge formalism, for some function $f$. This would not give an $f(\beta)$ lower bound for $(2,\beta)$-ruling sets, but only an $f(\beta) - \beta$ lower bound. Depending on $f$, this could matter a lot.
+
+\section{Problems vs Family of Problems}
+Observe that all the considered examples were problems defined on $3$-regular graphs. In fact, we used sentences like ``let's see how to define, in the node-edge formalism, the problem of computing an MIS on $3$-regular graphs''. Observe that we never defined ``MIS'' or ``Maximal Matching'', we always only defined them on graphs of a fixed degree.
+In fact, we could define (by considering a suitable generalization of the node-edge formalism) ``MIS on graphs of degree $\le 100$'', but we \emph{cannot} define MIS in the node-edge formalism. The reason is that there are infinite values of $\Delta$, but we want our problems to have finite description (so that we can apply round elimination on them).
+
+The workaround is the following. We don't consider MIS to be a problem, but we consider it to be a \emph{family of problems}.
+In other words, we define MIS (on regular graphs) as the family of problems, containing, for each $\Delta \in \mathbb{N}^+$, the following problem:
+\begin{flalign*}
+& \M^\Delta &\\
+& \P \s \O^{\Delta-1} &\\
+\\
+& \M \s \O\P &\\
+& \O \s \O &
+\end{flalign*}
+Yes, we just replaced $\Delta$ with a $3$. The subtle difference is that we can apply round elimination on problems, not on family of problems. We will see, when discussing round elimination, why this complicates things.
+However, this also shows how we can step outside the LCLs world:
+\begin{itemize}
+    \item According to the notation that we just introduced, MIS is definitely \emph{not} an LCL. It is an infinite family of problems, one for each maximum degree $\Delta$.
+    \item We use round elimination to prove, for each problem in the family, a lower bound.
+    \item We see how the asymptotics goes, and we get lower bounds as a function of $\Delta$.
+\end{itemize}
+
+\chapter{Generalizations of the Black-White Formalism}
+[TODO: two ways of define problems with inputs]
+[TODO: non-regular graphs]
 
 \chapter{Round Elimination}
 [TODO: define RE, explain techniques, ...]
