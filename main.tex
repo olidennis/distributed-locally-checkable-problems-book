@@ -26,6 +26,10 @@
 \newcommand{\R}{\mathsf{R}}
 \newcommand{\V}{\mathsf{V}}
 \newcommand{\s}{\mspace{5mu}}
+\DeclareMathOperator{\re}{\mathcal R}
+\DeclareMathOperator{\rere}{\overline{\mathcal R}}
+\newcommand{\ccs}{\mathfrak{C}}
+\newcommand{\ccc}{\mathcal{C}}
 
 \title{Locally Checkable Problems\\in Distributed Computing}
 \author{Dennis Olivetti}
@@ -498,6 +502,105 @@ However, this also shows how we can step outside the LCLs world:
 [TODO: non-regular graphs]
 
 \chapter{Round Elimination}
+Round elimination is a technique that can be used to prove lower (and upper) bounds in the LOCAL model. Informally, round elimination is a function $\re$ that takes as input a problem $\Pi$ in the black-white formalism and outputs a new problem $\Pi'$ in the black-white formalism, with the guarantee that $\Pi'$ is exactly one round easier than $\Pi$. This statement is omitting many details that we will see later. However, lower bounds are essentially obtained by applying this function multiple times.
+
+\section{The function $\re$.}
+Let $\Pi = (\Sigma,W,B)$. We now see how the problem $\Pi' = (\Sigma',B',W') = \re(\Pi)$ is formally defined. We will later then see some intuition and some examples.
+First of all, as mentioned earlier, when describing a problem in the black-white formalism, we are implicitly specifying \emph{who} is going to output the labels. That is, while the problems $(\Sigma,W,B)$ and $(\Sigma,B,W)$ have exactly the same constraints, in the former case we require white nodes to output labels, and we say that white nodes are active, while black nodes are passive, while in the latter case we require the black nodes to output, and we say that black nodes are active and white nodes are passive. When applying the round elimination function, not only we obtain a problem that is exactly $1$ round easier, but we also flip the roles of active and passive. 
+Let's now see the definition of $\Pi'$. Let $\Delta$ be the degree of the white nodes, and $\delta$ be the degree of the black nodes.
+
+\begin{itemize}
+    \item $\Sigma'$ is going to be a subset of $2^\Sigma \setminus \emptyset$.
+    \item We first define $B'$ as a function of $B$. 
+    \begin{itemize}
+        \item We first define an auxiliary constraint $\ccs$ as the set of all configurations $\{L_1, \ldots, L_\delta\}$ such that, for all $1 \le i \le \delta$, it holds that $L_i \subseteq 2^\Sigma \setminus \emptyset$, and such that, for all choices $\ell_1 \in L_1, \ldots \ell_\delta \in L_\delta$, the configuration $\{\ell_1, \ldots, \ell_\delta\}$ is in $B$.
+        \item We define $B'$ as the maximal configurations in $\ccs$, that is, the subset of $\ccs$ of configurations $\{L_1,\ldots,L_\delta\}$ such that there is no other configuration $\{L'_1,\ldots,L'_\delta\}$ in $\ccs$ such that there is a permutation $\phi$ of $\{1,\ldots,\delta\}$ such that:
+        \begin{itemize}
+            \item For all $1 \le i \le \delta$, $L_i \subseteq L'_i$;
+            \item There is at least one $i \in \{1,\ldots,\delta\}$ such that $L_i \subsetneq L'_i$.
+        \end{itemize}
+    \end{itemize}
+    \item $\Sigma'$ is defined as the set of labels that appear at least once in the configurations in $\ccs$, that is $\Sigma' = \bigcup_{\ccc \in \ccs} \bigcup_{L \in \ccc} \{L\}$.
+    \item We now define $W'$ as a function of $W$ and $\Sigma'$. We define $W'$ as the set of all configurations $\{L_1, \ldots, L_\delta\}$ such that, for all $1 \le i \le \Delta$, it holds that $L_i \in \Sigma'$, and such that there exists a choice $\ell_1 \in L_1, \ldots \ell_\Delta \in L_\Delta$ such that the configuration $\{\ell_1, \ldots, \ell_\Delta\}$ is in $W$.
+\end{itemize}
+
+\subsection{Some terminology}
+We say that a configuration $L_1,\ldots,L_\delta$ \emph{satisfies the universal quantifier} if for all choices $\ell_1 \in L_1, \ldots \ell_\delta \in L_\delta$, the configuration $\{\ell_1, \ldots, \ell_\delta\}$ is in $B$. Hence we can say that $\ccs$ is the set of all configurations that satisfy the universal quantifier.
+We say that a configuration is maximal if it is included in $B'$.
+A configuration $L_1,\ldots,L_\delta$ is \emph{dominated} by $L'_1,\ldots,L'_\delta$ if there exists a permutation $\phi$ such that: for all $1 \le i \le \delta$, $L_i \subseteq L'_i$, and there is at least one $i$ for which the inclusion is strict. Note that $B'$ is obtained by removing dominated configurations from $\ccs$.
+
+Similarly, we say that a configuration $L_1,\ldots,L_\delta$ \emph{satisfies the existential quantifier} if there exists a choice $\ell_1 \in L_1, \ldots \ell_\delta \in L_\delta$ such that the configuration $\{\ell_1, \ldots, \ell_\delta\}$ is in $W$.
+
+We can now describe $\Pi'$ more compactly as follows:
+\begin{itemize}
+    \item $B'$ is the set of maximal configurations over the alphabet $2^{\Sigma} \setminus \emptyset$ that satisfy the universal quantifier.
+    \item Let $\Sigma'$ be the set of labels appearing in $B'$.
+    \item $W'$ is the set of configuration over $\Sigma'$ that satisfy the existential quantifier.
+\end{itemize}
+
+
+
+\subsection{Some intuition}
+Let's unpack the definition and see one piece at a time.
+It is also useful to see the proof of why $\Pi'$ is exactly one round easier than $\Pi$, to better understand why the definition is the one given.
+First of all, if we defined $B' = \ccs$ (instead of taking only maximal configurations), the obtained problem would still be exactly one round easier. The only reason why we made the definition a bit more complicated is that it often makes the resulting problem ``smaller'', and hence easier to understand. So let's start by understanding $\ccs$. Think of the following:
+\begin{itemize}
+    \item We have an algorithm $\mathcal{A}$ that solves $\Pi$ in $T$ rounds, such that the output is produced by white nodes. We call this algorithm a \emph{white algorithm}.
+    \item Recall that an algorithm in the LOCAL model is just a function that maps the view of a node (that is, its radius-$T$ neighborhood) into an output.
+    \item Hence, a white algorithm does not have to be executed necessarily by a white node. If a black node $u$ gathers the view of a white node $v$, node $u$ can ask ``what would $v$ output?''
+    \item We define a \emph{black algorithm} $\mathcal{A}'$ that takes $T-1$ rounds as follows:
+    \begin{itemize}
+        \item Each black node $u$ spends $T-1$ rounds to gather its radius-$(T-1)$ neighborhood $B_{T-1}(u)$.
+        \item Observe that, if node $u$ gathered  $B_{T+1}(u)$ instead of $B_{T-1}(u)$, node $u$ could answer the following question for each white neighbor $v$: what would $v$ output on the edge $\{u,v\}$? This is doable because $B_{T+1}(u)$ contains $B_{T}(v)$, and $\mathcal{A}$, when running on $v$, solely depends on $B_{T}(v)$.
+        \item We would like node $u$ to answer such a question, but node $u$ does not have enough information to answer it. However, node $u$ can answer the following question (See \Cref{fig:re-simulation}). Consider all possible ways of ``extending'' $B_{T-1}(u)$ such that $B_{T}(v)$ becomes fixed. For each such way, what is the output of $v$? By answering this question, node $u$ would obtain a set of outputs, and we can now try to infer some properties about such outputs. For now, this explains why the labels of $\Pi'$ are sets of labels of $\Pi$. 
+    \end{itemize}
+    \item Recall that node $u$ answered the question for each neighbor $v_1,\ldots,v_\delta$. So node $u$ now obtained $\delta$ sets $L_1, \ldots, L_\delta$, and we can ask, what do these sets satisfy? Could it be that there exists a choice $\ell_1 \in L_1, \ldots, \ell_\delta \in L_\delta$ such that $\{\ell_1,\ldots,\ell_\delta\} \notin B$? We will see that the answer is \emph{no}, and observe that $\ccs$ is defined as the constraint containing all configurations \emph{not} satisfying this property. In other words, we say, ``we don't know what these sets are going to satisfy, but they definitely do not satisfy this property, so let's take the \emph{easiest} problem not satisfying this property'' (recall that $\ccs$ contains \emph{allowed} configurations, so by putting \emph{all} configurations \emph{not} satisfying this property, we make the problem as \emph{easy} as possible). Suppose for a contradiction the answer is \emph{yes}. Then, we can take $B_{T-1}(u)$, and $\delta$ extensions of it, $Y_1, \ldots, Y_\delta$, and create a graph $G$ satisfying the following: when running $\mathcal{A}$, node $v_1$ outputs $\ell_1$, \ldots, node $v_\delta$ outputs $\ell_\delta$. We would obtain that $\mathcal{A}$ produces an invalid configuration on $u$, a contradiction. See \Cref{fig:re-contradiction}.
+    \item Ignore for a moment that $\Pi'$ is defined by taking only maximal configurations from $\ccs$, and supposed we defined $\Pi'$ by using $\ccs$ directly. We obtained that $\Pi'$ can be solved in $T-1$ rounds by a black algorithm! This means that $\Pi'$ is \emph{at least one round easier} than $\Pi$.
+    \item Can we also solve the \emph{real} $\Pi'$ in $T-1$ rounds, the one that does not allow non-maximal configurations? Actually, yes. Suppose node $u$, by computing $\{L_1,\ldots,L_\delta\}$, obtains a non-maximal configuration. Consider an arbitrary maximal configuration $\{L'_1,\ldots,L'_\delta\}$ satisfying that, for all $i$, $L_i \subseteq L'_i$. If $u$ outputs such a configuration, it is clearly still satisfying the black constraint. Moreover, since the white nodes need to satisfy an existential quantifier, and since we made each set larger, we obtain that the white constraint is also still satisfied.
+    \item Let's now prove that $\Pi'$ is \emph{at most one round easier}. We prove this by showing that, given a black algorithm $\mathcal{A'}$ solving $\Pi'$ in $T-1$ rounds, we can create a white algorithm $\mathcal{A}$ solving $\Pi$ in $T$ rounds. The algorithm $\mathcal{A}$ simply works as follows. 
+    \begin{itemize}
+        \item Run $\mathcal{A'}$. This takes $T-1$ rounds.
+        \item Each black node $u$ sends to each white neighbor $v$ the output that it produced for the edge $\{u,v\}$. This only takes $1$ round. 
+        \item Each white node obtained sets $L_1,\ldots,L_\Delta$. By the definition of $W'$, white nodes can pick $\ell_1 \in L_1,\ldots,\ell_\Delta \in L_\Delta$ such that $\ell_1,\ldots,\ell_\Delta$ is in $W$, and output such a configuration. By the definition of $B'$, since the configurations in $B'$ satisfy the universal quantifier, all black nodes will be happy.
+    \end{itemize}
+\end{itemize}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figs/re-simulation.pdf}
+\caption{Let $X$ be the red area. Let $Y$ be the purple area. Let $T = 3$. An algorithm running on $v$ would only depend on $X$ and $Y$ (note that the union of $X$ and $Y$ is exactly $B_3(v)$). Node $u$ only sees $B_{2}(u)$, which is exactly $X$. It does not see $Y$. Node $u$, in order to know the output of $v$, would need to know $Y$. Node $u$ considers all possible $Y$ (which means that it considers all possible ways in which that part of the graph could look like: all possible inputs, all possible random bit assignments, ...), and for each of them computes the output of node $v$.}
+\label{fig:re-simulation}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figs/re-contradiction.pdf}
+\caption{Let $X$ be the red area. Let $Y_1$ be the purple area. Let $Y_2$ be the green area. Let $Y_3$ be the cyan area. Let $T = 3$. An algorithm running on $v_1$ would only depend on $X$ and $Y_1$ (note that the union of $X$ and $Y_1$ is exactly $B_3(v_1)$). An algorithm running on $v_2$ would only depend on $X$ and $Y_2$ (note that the union of $X$ and $Y_2$ is exactly $B_3(v_2)$). An algorithm running on $v_3$ would only depend on $X$ and $Y_3$ (note that the union of $X$ and $Y_3$ is exactly $B_3(v_3)$). 
+Suppose there exist $Y_1, Y_2, Y_3$ such that $v_1,v_2,v_3$ output a configuration $\{\ell_1,\ell_2,\ell_3\} \notin \ccs$. We could create a graph in which $\mathcal{A}$ fails on $u$. This would contradict the correctness of $\mathcal{A}$.} 
+\label{fig:re-contradiction}
+\end{figure}
+
+\section{Some technicalities}
+Recall that the core idea used for proving that $\Pi'$ is at least one round easier than $\Pi$ is the following:
+\begin{itemize}
+    \item Assume that, for each $i$, there is an extension $Y_i$ that, when combined it with $B_{T-1}(u)$, forces $v_i$ to output $\ell_i$.
+    \item Then, we can create a graph $G$ that contains $B_{T-1}(u)$ and all $Y_i$ \emph{at the same time}. Recall \Cref{fig:re-contradiction}.
+\end{itemize}
+However, can we really do that? Imagine that the $Y_1$ that forces $v_1$ to output $\ell_1$ contains a node with id $123$, and that the $Y_2$ that forces $v_2$ to output $\ell_2$ contains also a node with id $123$. Then the graph $G$ that we create would not be a valid instance, because it would contain two distinct nodes with the same id.
+This is the reason why round elimination does not directly apply to the LOCAL model, and some more machinery is needed.
+As is, round elimination works in the so-called \emph{deterministic port-numbering model}, which is the same as deterministic LOCAL, but without IDs. This is a weak model, and we would not be satisfied if our lower bounds applied to just this model. There is another issue: suppose $T \gg \log_\Delta n$. For the graph to stay regular, in $T$ rounds of communication, we would necessarily have to see at least one cycle. This could also make $Y_1$ and $Y_1$ not independend of each other. This is why round elimination cannot give lower bounds that are asymptotically better than $\log_\Delta n$.
+
+While how to get lower bounds better than $\log_\Delta n$ is still unknown, the other issue is fully solved. The route is the following:
+\begin{itemize}
+    \item We first make round elimination work in the \emph{randomized port-numbering model}, which is the same as randomized LOCAL but without IDs. In fact, one can prove that, if there is a white algorithm that solves $\Pi$ in $T$ rounds with failure probability $p$, then there is a black algorithm that solves $\Pi$ in $T-1$ rounds with failure probability $p'$ that is polynomially larger than $p$. This polynomial evolution in the failure probability is what makes randomized lower bounds obtained via round elimination asymptotically not better than $\log_\Delta \log n$.
+    \item Then, we observe that randomized port-numbering and randomized LOCAl are essentially the same model: in the randomized port-numbering model we can generate unique ids with high probability. Thus, we obtain lower bounds for randomized LOCAL.
+    \item Then, we use some existing techniques to convert a randomized lower bound into a lower bound for deterministic LOCAL that is even better.
+    \item However, we really don't have to worry about all this! There are existing theorems that can be used fully as a black box, to convert a lower bound obtained via round elimination into lower bounds for the LOCAL model. We will discuss this in more detail later.
+\end{itemize}
+
+\section{An example: bipartite edge grabbing}
+
+
 [TODO: define RE, explain techniques, ...]
 
 \chapter{Other Lower Bound Techniques}
