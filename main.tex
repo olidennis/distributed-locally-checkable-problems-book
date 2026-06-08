@@ -12,6 +12,7 @@
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
 \usepackage{cleveref}
 \usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{framed}
 
 \newcommand{\poly}{\operatorname{poly}}
 
@@ -30,6 +31,8 @@
 \DeclareMathOperator{\rere}{\overline{\mathcal R}}
 \newcommand{\ccs}{\mathfrak{C}}
 \newcommand{\ccc}{\mathcal{C}}
+
+\newtheorem{theorem}{Theorem}
 
 \title{Locally Checkable Problems\\in Distributed Computing}
 \author{Dennis Olivetti}
@@ -524,7 +527,7 @@ Let's now see the definition of $\Pi'$. Let $\Delta$ be the degree of the white 
     \item We now define $W'$ as a function of $W$ and $\Sigma'$. We define $W'$ as the set of all configurations $\{L_1, \ldots, L_\delta\}$ such that, for all $1 \le i \le \Delta$, it holds that $L_i \in \Sigma'$, and such that there exists a choice $\ell_1 \in L_1, \ldots \ell_\Delta \in L_\Delta$ such that the configuration $\{\ell_1, \ldots, \ell_\Delta\}$ is in $W$.
 \end{itemize}
 
-\subsection{Some terminology}
+\section{Some terminology}
 We say that a configuration $L_1,\ldots,L_\delta$ \emph{satisfies the universal quantifier} if for all choices $\ell_1 \in L_1, \ldots \ell_\delta \in L_\delta$, the configuration $\{\ell_1, \ldots, \ell_\delta\}$ is in $B$. Hence we can say that $\ccs$ is the set of all configurations that satisfy the universal quantifier.
 We say that a configuration is maximal if it is included in $B'$.
 A configuration $L_1,\ldots,L_\delta$ is \emph{dominated} by $L'_1,\ldots,L'_\delta$ if there exists a permutation $\phi$ such that: for all $1 \le i \le \delta$, $L_i \subseteq L'_i$, and there is at least one $i$ for which the inclusion is strict. Note that $B'$ is obtained by removing dominated configurations from $\ccs$.
@@ -538,9 +541,11 @@ We can now describe $\Pi'$ more compactly as follows:
     \item $W'$ is the set of configuration over $\Sigma'$ that satisfy the existential quantifier.
 \end{itemize}
 
+\section{An easy way to compute \texorpdfstring{$W'$}{W'}}
+In order to compute $W'$, there is an easy way that one can follow, which is possible to prove equivalent. 
+Start from $W'$ to be the empty set. Do the following operation in all possible ways. For each configuration in $W$, replace each label $\ell$ with a label from $\Sigma'$ that contains $\ell$. Add the resulting configuration to $W'$.
 
-
-\subsection{Some intuition}
+\section{Some intuition}
 Let's unpack the definition and see one piece at a time.
 It is also useful to see the proof of why $\Pi'$ is exactly one round easier than $\Pi$, to better understand why the definition is the one given.
 First of all, if we defined $B' = \ccs$ (instead of taking only maximal configurations), the obtained problem would still be exactly one round easier. The only reason why we made the definition a bit more complicated is that it often makes the resulting problem ``smaller'', and hence easier to understand. So let's start by understanding $\ccs$. Think of the following:
@@ -580,7 +585,7 @@ Suppose there exist $Y_1, Y_2, Y_3$ such that $v_1,v_2,v_3$ output a configurati
 \label{fig:re-contradiction}
 \end{figure}
 
-\section{Some technicalities}
+\section{Some technicalities}\label{sec:re-technicalities}
 Recall that the core idea used for proving that $\Pi'$ is at least one round easier than $\Pi$ is the following:
 \begin{itemize}
     \item Assume that, for each $i$, there is an extension $Y_i$ that, when combined it with $B_{T-1}(u)$, forces $v_i$ to output $\ell_i$.
@@ -598,8 +603,101 @@ While how to get lower bounds better than $\log_\Delta n$ is still unknown, the 
     \item However, we really don't have to worry about all this! There are existing theorems that can be used fully as a black box, to convert a lower bound obtained via round elimination into lower bounds for the LOCAL model. We will discuss this in more detail later.
 \end{itemize}
 
-\section{An example: bipartite edge grabbing}
+\section{An example: edge grabbing}\label{sec:re-edge-grabbing}
+Edge grabbing requires each node to mark \emph{exactly one} incident edge, such that no edge is marked by both endpoints at the same time.
+Observe that it is essentially the same problem as sinkless orientation:
+\begin{itemize}
+    \item Given a solution for sinkless orientation, each edge can mark an arbitrary outgoing edge.
+    \item Given a solution for edge grabbing, nodes can label grabbed edges as \emph{outgoing}, and then they can spend $1$ round to know which of the incident edges are grabbed by the neighbors (and label them \emph{incoming}), and to agree on an orientation of the incident edges not grabbed by anybody. 
+\end{itemize}
+Hence, if we prove a lower bound of $T$ rounds for edge grabbing, we obtain a lower bound of $T$ rounds for sinkless orientation as well.
+Let's consider this problem on $3$-regular graphs. The problem can be defined in the node-edge formalism as follows:
+\begin{flalign*}
+& \A \s\B^2 &\\
+\\
+& \B \s \A\B &
+\end{flalign*}
+In other words, $\A$ means \emph{grabbed}, and $\B$ means \emph{not grabbed}. Each node outputs exactly one $\A$. On the edges, at most one side can label the edge $\A$.
+Recall that the notation above means that $\Pi = (\Sigma,W,B)$ is defined as:
+\begin{itemize}
+    \item $\Sigma = \{\A,\B\}$
+    \item $W = \{\{\A,\B,\B\}\}$
+    \item $B = \{\{\B,\A\},\{\B,\B\}\}$
+\end{itemize}
+We will compute $\Pi' = (\Sigma',B',W') = \re(\Pi)$. However, before that, please note the following. $\Pi'$ would be one round easier than $\Pi$ in a mode where we add a black node in the middle of each edge. But in the model that we are considering there are no such nodes. There are two (both correct) ways to interpret this:
+\begin{itemize}
+    \item We prove a lower bound of $T$ rounds in a mode where such black nodes exist. By an easy simulation argument (distances in these two models differ by a multiplicative factor of $2$), this implies a lower bound of $T/2$ rounds in a model where such nodes do not exist.
+    \item We are considering a model where edges can be computing entities, and we are saying that if we have a $T$-round algorithm for $\Pi$ running on nodes, we obtain an algorithm for $\Pi'$ in a model where edges are the computing entities and requires $T-\frac{1}{2}$ rounds. By applying $\re$ again, we will go back to a node algorithm that requires $T-1$ rounds.
+\end{itemize}
+It does not matter which interpretation we choose, if we manage to apply $\re$ for $x$ times, in both cases we get a lower bound of $x/2$ rounds for the case in which black nodes do not exist.
 
+Let's compute $\Pi' = (\Sigma',B',W')$.
+\begin{itemize}
+    \item We compute $B'$. Let's first compute the configurations that satisfy the universal quantifier. We obtain the following.
+\begin{flalign*}
+& \{\B\} \s\{\B\} &\\
+& \{\B\} \s\{\A\} &\\
+& \{\B\} \s\{\A,\B\} &
+\end{flalign*}
+Indeed, there are exactly all the configurations over the labels $2^{\{\A,\B\}} \setminus \emptyset$ that contain $\A$ in at most one of the two sets (we need to satisfy this requirement because $B$ allows every configuration except for $\A \s \A$).
+We now discard dominated (i.e., non-maximal) configurations. The only one remaining is $\{\B\} \s\{\A,\B\}$. Hence, $B'$ is the following constraint.
+\begin{flalign*}
+& \{\B\} \s\{\A,\B\} &
+\end{flalign*}
+    \item We obtain that $\Sigma' = \{\{\B\},\{\A,\B\}\}$.
+    \item We now compute $W'$, which must contain all configurations from which we can pick one $\A$ and two $\B$. Any configuration different from $\{\B\}^3$ would satisfy this requirement. Hence, $W'$ contains the following configurations:
+\begin{flalign*}
+& \{\A,\B\} \s \{\B\}^2 &\\
+& \{\A,\B\}^2 \s \{\B\} &\\
+& \{\A,\B\}^3 &
+\end{flalign*}
+\end{itemize}
+We computed $\Pi'$. However, let us make it easier to read. Let's rename some labels. Let use replace $\{\B\}$ with $\A$ and $\{\A,\B\}$ with $\B$. We obtain that $\Pi'$ is the following problem:
+\begin{flalign*}
+& \A \s\B &\\
+\\
+& \B \s \A^2 &\\
+& \B^2 \s \A &\\
+& \B^3 &
+\end{flalign*}
+We can write this problem more compactly as:
+\begin{flalign*}
+& \A \s\B &\\
+\\
+& \B \s \A\B^2 &
+\end{flalign*}
+Let's now compute $\Pi'' = (\Sigma'',W'',B'') = \re(\Pi')$.
+\begin{itemize}
+    \item We first compute $W''$. By the definition of $W'$, we want all configurations over $2^{\Sigma'} \setminus \emptyset$ from which we can pick at least one $\B$. If we consider only the maximal ones, we get that the only configuration contained in $W''$ is the following:
+\begin{flalign*}
+& \{\B\} \s \{\A,\B\}^2 &
+\end{flalign*}
+    \item Let's now compute $B''$ by using the easy method. We start from $\A \s \B$ and we replace $\A$ with all sets containing $\A$ (which is only $\{\A,\B\}$) and we replace $\B$ with all sets containing $\B$ (which are $\{\B\}$ and $\{\A,\B\}$). We obtain the following condensed configuration:
+\begin{flalign*}
+& \{\A,\B\} \s \{\B\}\{\A,\B\} &
+\end{flalign*} 
+\end{itemize}
+As before, let us rename the labels to make the problem easier to read. Let's rename some labels. Let use replace $\{\B\}$ with $\A$ and $\{\A,\B\}$ with $\B$. We obtain that $\Pi''$ is the following problem:
+\begin{flalign*}
+& \A \s\B^2 &\\
+\\
+& \B \s \A\B &
+\end{flalign*}
+We obtained that $\Pi'' = \Pi$. There must be something wrong. How can $\Pi$ be exactly $2$ rounds easier than itself?
+There is nothing wrong: remember the small technicalities mentioned in 
+\Cref{sec:re-technicalities}. We can interpret what we obtained as follows:
+\begin{framed}
+Suppose $\Pi$ can be solved in $T$ rounds, such that $T$ is small-enough so that the requirements of round elimination apply (that is, there are no cycles in the radius-$T$ neighborhood of the nodes). Then, $\Pi$ is $2$ rounds easier than itself. Since the conclusion is a contradiction, the premise is false, hence $\Pi$ cannot be solved with small-enough $T$.
+\end{framed}
+
+As said earlier, there are some black-box theorems that we can apply. One of them is the following:
+\begin{theorem}\label{thm:basic-lifting-fp}
+Suppose that $\Pi = \re(\Pi)$ or $\Pi = \re(\re(\Pi))$. Then, $\Pi$ requires $\Omega(\log n)$ for deterministic algorithms in the LOCAL model, and $\Omega(\log \log n)$ for randomized ones.
+\end{theorem}
+We thus get that edge grabbing, and sinkless orientation, in $3$-regular graphs, have deterministic and randomized lower bounds of $\Omega(\log n)$ and  $\Omega(\log \log n)$ respectively. As a side note, such lower bounds (and all lower bounds obtained via round elimination) also apply to regular balanced trees as well. Another note: the $\Omega$ notation in \Cref{thm:basic-lifting-fp} is hiding dependencies in $\Delta$ and $\delta$. While for our specific case it does not matter (because we are considering the problem on $3$-regular graphs), suppose we tried to prove a lower bound for edge grabbing in $\Delta$-regular graphs as a function of $n$ and $\Delta$. In other words, suppose we tried to prove a lower bound for a whole family of problems at the same time. Then we would have needed to use a different lifting theorem, that correctly takes $\Delta$ into account.
+
+\section{Fixed Points}
+What we have seen in \Cref{sec:re-edge-grabbing} is an example of so-called \emph{fixed point}.
 
 [TODO: define RE, explain techniques, ...]
 
