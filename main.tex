@@ -18,6 +18,8 @@
 
 \newcommand{\A}{\mathsf{A}}
 \newcommand{\B}{\mathsf{B}}
+\newcommand{\C}{\mathsf{C}}
+\newcommand{\E}{\mathsf{E}}
 \newcommand{\G}{\mathsf{G}}
 \newcommand{\I}{\mathsf{I}}
 \newcommand{\M}{\mathsf{M}}
@@ -809,6 +811,62 @@ which can be also written as
 \end{flalign*}
 which is the same node constraint as sinkless orientation.
 In other words, we can relax SSO to SO, and SO to EG, and EG is a non-trivial fixed point. We get that SSO admits a non-trivial fixed point relaxation.
+
+\subsection{Example: 3-coloring}
+Consider the problem of $3$-coloring $3$-regular graphs. It can be defined as follows:
+\begin{flalign*}
+& \A^3 &\\
+& \B^3 &\\
+& \C^3 &\\
+\\
+& \A \s \B\C &\\
+& \B \s \C &
+\end{flalign*}
+This is an example of a problem for which, finding a non-trivial fixed point relaxation, is not entirely trivial. In fact, we knew that this problem was hard even before knowing a fixed point for it, and it was proved as follows:
+\begin{itemize}
+    \item Consider the setting in which the graph comes with a $3$-edge coloring given.
+    \item One can prove that, in such a setting, EG is still non-trivial. Not only, one can also prove that, in such a setting, EG is still \emph{hard}.
+    \item However, given a $3$-coloring \emph{and} a $3$-edge coloring, EG becomes $0$-round solvable (nodes of color $x$ grab the edge with color $x$).
+    \item Moreover, if we are only given a $3$-coloring, \emph{but not} a $3$-edge coloring, then EG is still non-trivial.
+    \item This suffices to infer that $3$-coloring is a hard problem, that is, it requires $\Omega(\log n)$ deterministic rounds. In fact, suppose for a contradiction that $3$-coloring was easy. We would get that, given a $3$-edge coloring, we could solve an easy problem ($3$-coloring) and then use the obtained solution to solve EG, but we know that EG is hard given a $3$-edge coloring.
+\end{itemize}
+A non-trivial fixed point relaxation for $3$-coloring came much later. A possible reason is the following: if we take the natural generalization of this problem, that is, $\Delta$-coloring $\Delta$-regular graphs, the ``smallest'' non-trivial fixed point relaxation that we know is a problem that requires $2^\Delta$ labels to be described. So, in some sense, to get a fixed point we needed to guess a problem that has exponentially larger description size.
+
+A non-trivial fixed point relaxation for $3$-coloring is the following. We use some new notation here. $(\A\B)$ represents a single label. That is, if we want to give a name to a label and use multiple characters, we put those character between parentheses.
+\begin{flalign*}
+& \A^3 &\\
+& \B^3 &\\
+& \C^3 &\\
+& (\A\B)^2 \s \E &\\
+& (\A\C)^2 \s \E &\\
+& (\B\C)^2 \s \E &\\
+& (\A\B\C) \s \E^2 &\\
+\\
+& \E \s \E\A\B\C(\A\B)(\A\C)(\B\C)(\A\B\C) &\\
+& \A \s \E\B\C(\B\C) &\\
+& \B \s \E\A\C(\A\C) &\\
+& \C \s \E\A\B(\A\B) &\\
+& (\A\B) \s \E\C &\\
+& (\A\C) \s \E\B &\\
+& (\B\C) \s \E\A &\\
+& (\A\B\C) \s \E&
+\end{flalign*}
+Note that some configurations have been written multiple times, just to more easily see the pattern. Think of the label $\E$ as ``empty'', or as ``no color'', and more generally think of each label as a set of colors. For example $\A$ is the set containing only color $\A$, while $(\A\B)$ is the set containing colors $\A$ and $\B$, while $\E$ is the empty set.
+We can see that the problem allows the following solutions:
+\begin{itemize}
+    \item Nodes can output a color, as in the case of $3$-coloring, or
+    \item Nodes can output multiple colors. However, if they output $k$ colors, then they can output the empty set on $k-1$ incident half-edges. For example, if a node outputs $\A\B^2 \s \E$, then we can interptet it as being colored $\A$ and $\B$ at the same time.
+    \item The edge constraint requires the endpoints of an edge to have assigned disjoint sets.
+\end{itemize}
+In other words, this is a generalization of coloring. In standard coloring, each node outputs exactly one color. In this version, nodes may output multiple colors. Note that outputting multiple colors is a hard task: if a node outputs $(\A\B)$ on an edge, the other endpoint cannot output neither $\A$ nor $\B$ on the same edge. However, nodes that output multiple colors are rewarded: for each additional color that they output (except for the first), they can mark an incident edge as ``don't care''.
+One can prove that this problem is a fixed point and is not trivial.
+
+Summarizing, $3$-coloring is not a fixed point, but we can find a non-trivial fixed point relaxation of it that requires $8$ labels to be described, and this fixed point has a natural interpretation.
+
+\subsection{Example: locally optimal cut}
+Not all fixed points admit a natural interpretation. We will now discuss a problem for which proving an $\Omega(\log n)$ lower bound has been significantly harder.
+
+
 
 [TODO: 0 round solvability]
 \chapter{Other Lower Bound Techniques}
