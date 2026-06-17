@@ -34,6 +34,11 @@
 
 \newtheorem{theorem}{Theorem}
 
+\newcounter{open}
+\newtheorem{oq}[open]{Open Problem}
+\crefname{open}{Open Problem}{Open Problems}
+\Crefname{open}{Open Problem}{Open Problems}
+
 \title{Locally Checkable Problems\\in Distributed Computing}
 \author{Dennis Olivetti}
 \date{Last Update: \today}
@@ -598,7 +603,7 @@ As is, round elimination works in the so-called \emph{deterministic port-numberi
 While how to get lower bounds better than $\log_\Delta n$ is still unknown, the other issue is fully solved. The route is the following:
 \begin{itemize}
     \item We first make round elimination work in the \emph{randomized port-numbering model}, which is the same as randomized LOCAL but without IDs. In fact, one can prove that, if there is a white algorithm that solves $\Pi$ in $T$ rounds with failure probability $p$, then there is a black algorithm that solves $\Pi$ in $T-1$ rounds with failure probability $p'$ that is polynomially larger than $p$. This polynomial evolution in the failure probability is what makes randomized lower bounds obtained via round elimination asymptotically not better than $\log_\Delta \log n$.
-    \item Then, we observe that randomized port-numbering and randomized LOCAl are essentially the same model: in the randomized port-numbering model we can generate unique ids with high probability. Thus, we obtain lower bounds for randomized LOCAL.
+    \item Then, we observe that randomized port-numbering and randomized LOCAL are essentially the same model: in the randomized port-numbering model we can generate unique ids with high probability. Thus, we obtain lower bounds for randomized LOCAL.
     \item Then, we use some existing techniques to convert a randomized lower bound into a lower bound for deterministic LOCAL that is even better.
     \item However, we really don't have to worry about all this! There are existing theorems that can be used fully as a black box, to convert a lower bound obtained via round elimination into lower bounds for the LOCAL model. We will discuss this in more detail later.
 \end{itemize}
@@ -626,7 +631,7 @@ Recall that the notation above means that $\Pi = (\Sigma,W,B)$ is defined as:
 \end{itemize}
 We will compute $\Pi' = (\Sigma',B',W') = \re(\Pi)$. However, before that, please note the following. $\Pi'$ would be one round easier than $\Pi$ in a mode where we add a black node in the middle of each edge. But in the model that we are considering there are no such nodes. There are two (both correct) ways to interpret this:
 \begin{itemize}
-    \item We prove a lower bound of $T$ rounds in a mode where such black nodes exist. By an easy simulation argument (distances in these two models differ by a multiplicative factor of $2$), this implies a lower bound of $T/2$ rounds in a model where such nodes do not exist.
+    \item We prove a lower bound of $T$ rounds in a model where such black nodes exist. By an easy simulation argument (distances in these two models differ by a multiplicative factor of $2$), this implies a lower bound of $T/2$ rounds in a model where such nodes do not exist.
     \item We are considering a model where edges can be computing entities, and we are saying that if we have a $T$-round algorithm for $\Pi$ running on nodes, we obtain an algorithm for $\Pi'$ in a model where edges are the computing entities and requires $T-\frac{1}{2}$ rounds. By applying $\re$ again, we will go back to a node algorithm that requires $T-1$ rounds.
 \end{itemize}
 It does not matter which interpretation we choose, if we manage to apply $\re$ for $x$ times, in both cases we get a lower bound of $x/2$ rounds for the case in which black nodes do not exist.
@@ -697,10 +702,115 @@ Suppose that $\Pi = \re(\Pi)$ or $\Pi = \re(\re(\Pi))$. Then, $\Pi$ requires $\O
 We thus get that edge grabbing, and sinkless orientation, in $3$-regular graphs, have deterministic and randomized lower bounds of $\Omega(\log n)$ and  $\Omega(\log \log n)$ respectively. As a side note, such lower bounds (and all lower bounds obtained via round elimination) also apply to regular balanced trees as well. Another note: the $\Omega$ notation in \Cref{thm:basic-lifting-fp} is hiding dependencies in $\Delta$ and $\delta$. While for our specific case it does not matter (because we are considering the problem on $3$-regular graphs), suppose we tried to prove a lower bound for edge grabbing in $\Delta$-regular graphs as a function of $n$ and $\Delta$. In other words, suppose we tried to prove a lower bound for a whole family of problems at the same time. Then we would have needed to use a different lifting theorem, that correctly takes $\Delta$ into account.
 
 \section{Fixed Points}
-What we have seen in \Cref{sec:re-edge-grabbing} is an example of so-called \emph{fixed point}.
+What we have seen in \Cref{sec:re-edge-grabbing} is an example of so-called \emph{fixed point}, and in particular a \emph{non-trivial} fixed point.
+Non-trivial here just means that the fixed point is not solvable in $0$ rounds of communication. I.e., the problem 
+\begin{flalign*}
+& \A^3 &\\
+\\
+& \A^2 &
+\end{flalign*}
+is also a fixed point, but it is a trivial problem: everybody can output $\A$ on all its incident edges.
 
-[TODO: define RE, explain techniques, ...]
+As previously discussed, LCL problems can be classified as being \emph{easy} or \emph{hard}. In order to prove that a problem is easy, it is sufficient to provide an $O(\log^\star n)$ algorithm. In order to prove that a problem is hard, we need to provide a deterministic  $\Omega(\log n)$ lower bound.
+As discussed, showing that a problem is a non-trivial fixed point implies that the problem is $\Omega(\log n)$. However, very few interesting problem are non-trivial fixed points.
+A technique that we often use to prove an $\Omega(\log n)$ lower bound is to provide a non-trivial fixed point \emph{relaxation}, that is, given a problem $\Pi$ for which we want to prove a lower bound, we find a problem $\Pi'$ that is \emph{at least as easy as} $\Pi$ and such that $\Pi'$ is a non-trivial fixed point.
+Providing a fixed point relaxation for a problem is one of the very few know ways that we know to prove that the problem is $\Omega(\log n)$.
+A major open question is the following:
+\begin{oq}\label{oq:fp}
+    Does every $\Omega(\log n)$ problem admit a non-trivial fixed point relaxation?
+\end{oq}
+In other words, we don't know if, providing a non-trivial fixed point relaxation for a problem, is a universal way to prove lower bounds.
+Any answer to \Cref{oq:fp} would have important consequences:
+\begin{itemize}
+    \item If the answer is ``yes'', it would imply \emph{decidability}. In more detail, it is known that it is semi-decidable whether a problem is solvable in $O(\log^\star n)$ rounds. Since it is semi-decidable whether a problem admits a non-trivial fixed point relaxation, if the answer is ``yes'' then we would get that it is semi-decidable whether the problem is $\Omega(\log n)$. Combining the two, we would get that we can decide if a problem is easy or hard.
+    \item If the answer is ``no'', then it means that there are problems that are $\Omega(\log n)$ for which we have no known ways to prove that they are indeed $\Omega(\log n)$.
+\end{itemize}
+Currently, we have \emph{zero} problems that we know to be $\Omega(\log n)$ but for which we do not know a non-trivial fixed point relaxation.
 
+In the past, we had some. There is a technique that, in the distributed setting, is called Mark's technique, and comes from a different field called \emph{descriptive combinatorics}. This technique can be used to prove that a problem does not belong to a class of problems called \emph{Borel}. It is known that if a problem is not in this class, then the problem requires $\Omega(\log n)$ (note, it is not an if and only if). For quite a while we knew of a class of problems called \emph{homomorphism problems}, for which Mark's technique succeeds in giving lower bounds.
+These problems were candidates for answering ``no'' to \Cref{oq:fp}. We now know that, if Mark's technique succeeds for a problem, then we can always construct a non-trivial fixed point relaxation for the problem.
+So currently we have zero candidates that could help in answering ``no'' to the question, and we know that such candidates cannot be obtained via Mark's technique.
+However, we know that the answer \emph{is} ``no'' for LCLs with inputs. In more detail, consider the problem of computing a sinkless and sourceless orientation (SSO) given as input a solution for sinkless orientation (SO), that we will call SSO-given-SO.
+We know a non-trivial fixed point relaxation for SSO (which is edge grabbing, EG). However, EG is a trivial problem in the context in which a solution for SO is given as input. It has been proved that \emph{any} non-trivial fixed point relaxation of SSO \emph{is trivial} given a solution for SO. So how do we know that SSO-given-SO is $\Omega(\log n)$? Well, providing a fixed point is not really the only way to prove such a lower bound:
+\begin{itemize}
+    \item SSO behaves very nicely under round elimination, the number of labels grows by $1$ at each $\re$ step.
+    \item There are lifting theorems that say that if we have an infinite sequence of problems given by $\re$ that are all non-trivial, where the number of labels grows ``slow-enough'', then the initial problem is $\Omega(\log n)$.
+\end{itemize}
+But SSO is really an exception, the typical behavior of an interesting problem $\Pi$ is the following:
+\begin{itemize}
+    \item If we try to apply round elimination to $\Pi$, we see that, at each step, the number of labels grows exponentially.
+    \item We try to \emph{relax} $\Pi$, or $\re(\Pi)$, or $\re(\re(\Pi))$, ..., with the hope to obtain a non-trivial fixed point.
+    \item In all known cases, if we reach a problem that behaves as nicely as SSO (i.e., linear growth in the number of labels), then we can relax the problem a bit more and get a non-trivial fixed point.
+\end{itemize}
+So the only way this idea of ``we can't get a fixed point but linear growth is enough for a lower bound'' has been used is to prove a lower bound in the setting with input.
+In fact, a related open question is the following:
+\begin{oq}
+    Is there a universal technique that can be used to prove lower bound in the setting of LCLs with input?
+\end{oq}
+We know that ``fixed points'' are not the answer, because of SSO-given-SO. And it seems unlikely that ``linear growth'' is the answer. An example of problem for which we know how to get lower bounds via reductions but not directly via round elimination is, e.g., the problem $\Pi$ of computing a $4$-coloring in $4$-regular graphs, given an orientation where every node has exactly $2$ incoming and $2$ outgoing edges.
+For this problem, we do not know whether it is possible to define a sequence of problems $\Pi_1, \ldots,$ such that $\Pi_1 = \Pi$ and $\Pi_{i+1}$ is a relaxation of $\re(\Pi_i)$ and such that the growth in the number of labels is not exponential.
+
+For now, we will put the topic of inputs aside, and we will discuss fixed points in the setting with no input. We will see some examples of fixed points and of non-trivial fixed point relaxations.
+
+
+\subsection{Example: 2-coloring}
+Consider the problem of $2$-color a $3$-regular graph. In the node-edge formalism, it can be defined as follows:
+\begin{flalign*}
+& \A^3 &\\
+& \B^3 &\\
+\\
+& \A \s \B &
+\end{flalign*}
+An easy way to see that it is a fixed point is the following: if we pick any pair of configurations from the node side (including different permutations of the same configuration), or any pair on the edge side, the edit distance between them is $\ge 2$.
+This implies that, when we write down the configurations satisfying the universal quantifier, we only get the original configurations, where we replace labels with singleton sets. This ensures that the problems does not change when applying round elimination, and after two steps of $\re$ we get back the problem itself.
+\subsection{Example: perfect matching}
+Consider the problem of computing a perfect matching in a $3$-regular graph. In the node-edge formalism, it can be defined as follows:
+\begin{flalign*}
+& \M \s \O^2 &\\
+\\
+& \M \s \M &\\
+& \O \s \O &
+\end{flalign*}
+In other words, each node marks exactly one edge, and an edge must be either marked by both endpoints or by none of them.
+For the same reason as $2$-coloring, this problem is a fixed point.
+
+Problems that satisfy the aforementioned edit-distance $\ge 2$ property are typically only problems that are so hard that one could prove lower bounds via different techniques. The more typical case is that the problem of interest is not a fixed point, and we need to find a non-trivial fixed point relaxation for it.
+
+\subsection{Example: sinkless orientation}
+Sinkless orientation on $3$-regular graphs can be defined in the node-edge formalism as follows:
+\begin{flalign*}
+& \A \s \A\B^2 &\\
+\\
+& \A \s \B &
+\end{flalign*}
+Note that this problem does not satisfy the edit-distance $\ge 2$ property: on the nodes, we could pick $\A^3$ and $\A^2 \s \B$, which have edit distance $1$.
+One can also check that this problem is not a fixed point. In fact, one can check that  $\re(\re(\mathrm{SO})) = \mathrm{EG}$, and note that $\mathrm{EG} \neq \mathrm{SO}$.
+But we have already seen that EG is a fixed point in \Cref{sec:re-edge-grabbing}.
+Since $\re(\re(\mathrm{SO}))$ is a relaxation of SO (the $\re$ operator guarantees that), we get that EG is a fixed point relaxation of SO. One can also check that EG is a non-trivial problem (we will later see how), and we hence get that EG is a non-trivial fixed point relaxation of SO.
+Unfortunately, this is really an exceptional case, problems do not tend to naturally become fixed points after few steps of $\re$.
+
+\subsection{Example: sinkless and sourceless orientation}
+Sinkless and sourceless orientation on $3$-regular graphs can be defined in the node-edge formalism as follows:
+\begin{flalign*}
+& \A \s \B \s \A\B &\\
+\\
+& \A \s \B &
+\end{flalign*}
+That is, each edge must be properly oriented, and each node needs to have at least one incoming and at least one outgoing edge.
+This problem is not a fixed point, and one can check that this problem would not converge into a fixed point by applying $\re$ (the number of labels would grow by $1$ at each step). 
+However, there is a really easy relaxation that we can perform: we add $\A^3$ to the allowed node configurations. We get that the node constraint is 
+\begin{flalign*}
+& \A \s \B \s \A\B &\\
+& \A^3 &
+\end{flalign*}
+which can be also written as 
+\begin{flalign*}
+& \A \s \A\B^2 &
+\end{flalign*}
+which is the same node constraint as sinkless orientation.
+In other words, we can relax SSO to SO, and SO to EG, and EG is a non-trivial fixed point. We get that SSO admits a non-trivial fixed point relaxation.
+
+[TODO: 0 round solvability]
 \chapter{Other Lower Bound Techniques}
 [TODO: Marks, KMW, indistinguishability, ...]
 
