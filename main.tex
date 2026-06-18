@@ -28,6 +28,9 @@
 \newcommand{\Q}{\mathsf{Q}}
 \newcommand{\R}{\mathsf{R}}
 \newcommand{\V}{\mathsf{V}}
+\newcommand{\X}{\mathsf{X}}
+\newcommand{\Y}{\mathsf{Y}}
+\newcommand{\p}{\mathsf{+}}
 \newcommand{\s}{\mspace{5mu}}
 \DeclareMathOperator{\re}{\mathcal R}
 \DeclareMathOperator{\rere}{\overline{\mathcal R}}
@@ -865,7 +868,87 @@ Summarizing, $3$-coloring is not a fixed point, but we can find a non-trivial fi
 
 \subsection{Example: locally optimal cut}
 Not all fixed points admit a natural interpretation. We will now discuss a problem for which proving an $\Omega(\log n)$ lower bound has been significantly harder.
+The problem is the one of computing a locally optimal cut (LOC) in $3$-regular graphs. A locally optimal cut is a $2$-coloring of the nodes satisfying that, if a node has a color, it needs to have at least two neighbors of the opposite color. It is a locally optimal cut in a game-theoretic sense: if nodes try to selfishly maximize the number of neighbors of the opposite color by unilaterally deciding to change color, then this problem is a Nash-stable solution. This problem is also called $1$-defective $2$-coloring: it is a $2$-coloring where nodes are allowed to have at most $1$ neighbor of the same color. This problem is also called unfriendly partition or majority coloring.
+In the node-edge formalism, this problem can be encoded as follows.
+\begin{flalign*}
+& \A^2 \s \X &\\
+& \B^2 \s \Y &\\
+\\
+& \A\X \s \B\Y &\\
+& \X\Y \s \X\Y &
+\end{flalign*}
+That is, nodes of one color output $\A^2 \s \X$, while nodes of the other color output $\B^2 \s Y$. The labels $\X$ and $\Y$ are used to mark the edge in which there could be a neighbor of the opposite color. In fact, label $\X$ is compatible with $\X$ (so two neighbors of the first color can both label their connecting edge with $\X$) but not with $\A$ (as otherwise a node of the first color could end up having more than $1$ neighbor of the first color), and is also compatible with both $\B$ and $\Y$ (because they are both labels used by nodes of the opposite color).
 
+The original proof showing that this problem is $\Omega(\log n)$ uses a reduction from the hardness of sinkless orientation. This reduction is non-trivial. In fact, we cannot directly convert a solution for LOC into a solution for SO, and the proof follows a different route. The proof explots the fact that, if a problem can be solved in $o(\log n)$, then it can also be solved in $O(\log^\star n)$ in a normal form. The normal form proceeds as follows:
+\begin{itemize}
+    \item For some suitable parameters $c$ and $d$, compute a distance-$d$ $c$-coloring, that is, a coloring with $c$ colors such that nodes within distance $d$ have different colors.
+    \item Apply an $O(1)$-round algorithm after that.
+\end{itemize} 
+The lower bound is obtained by showing that, if we have an $o(\log n)$ rounds algorithm for LOC, and we normalize it in this way, then we can construct a suitable virtual graph where we run this algorithm, and we can convert the obtained solution into a sinkless orientation solution on the original graph.
+
+For quite a white we did not have an alternative proof of hardness, and this problem was a candidate to answer ``no'' to \Cref{oq:fp}. However, we eventually got a fixed point for this problem, which is the following:
+\begin{flalign*}
+& (\A\X)^2 \s \X &\\
+& (\B\Y)^2 \s \Y &\\
+& (\A\B\X\Y\p) \s (\X\Y) \s \emptyset&\\
+& (\B\X\Y+) \s (\A\X\Y\p) \s \emptyset&\\
+& (\A\X\Y\p) \s \X^2 &\\
+& (\B\X\Y\p) \s \Y^2 &\\
+& (\X\Y\p) \s (\X\Y)^2 &\\
+\\
+& \X(\A\X)\emptyset \s (\B\Y)\emptyset \Y &\\
+&\emptyset \s \X(\A\X)(\B\Y)(\X\Y)(\X\Y\p)\emptyset(\B\X\Y\p)(\A\B\X\Y\p)(\A\X\Y\p)\Y &\\
+&\X\emptyset \s \X(\B\Y)(\X\Y)(\X\Y\p)\emptyset(\B\X\Y\p)\Y &\\
+&\X(\A\X)(\X\Y)(\X\Y\p)\emptyset(\A\X\Y\p)\Y \s \emptyset \Y &\\
+&\X(\X\Y)\emptyset \Y \s \X(\X\Y)(\X\Y\p)\emptyset \Y &
+\end{flalign*}
+This is a relaxation of the original problem: if we rename $(\A\X)$ to $\A$ and $(\B\Y)$ to $\B$, we get that the allowed configurations of LOC are allowed also here. However, differently from the case of the fixed point relaxation of $3$-coloring, it is quite hard to get some intuition about this problem. Does it have some natural interpretation? We don't know.
+This fixed point was found by hand, by manually trying to relax the problems obtained by applying $\re$ on LOC. However, by carefully analyzing this fixed point, one can actually find some very hidden pattern. In fact, there is a mechanical way that one can use to obtained this fixed point by starting from LOC. We will later discuss this mechanical procedure. The same procedure, applied to $3$-coloring, gives the fixed point relaxation of $3$-coloring that we have seen earlier. In fact, all known fixed points can be obtained by applying this procedure, and discovering this procedure allowed us to find non-trivial fixed point relaxations that are so complicated (hundreds of labels) that finding them manually would have been hopeless.
+
+\section{Relaxations}
+We now put the discussion about fixed points aside, and we go back to the basics. We are given a problem $\Pi$, how can we try to construct a problem sequence that gives a lower bound? If we compute $\re(\Pi)$, and then $\re(\re(\Pi))$ and so on, for most of the problems of interest we quickly get so many labels that it is hard to find a natural interpretation of the problem, or to even compute the next problem. The basic goal to apply round elimination successfully is to manage to do the following. 
+We want to replace $\re(\Pi)$ with some problem $\Pi'$ such that:
+\begin{enumerate}
+    \item $\Pi'$ must be at least as easy as $\Pi$.
+    \item $\Pi'$ has much smaller description size (number of labels, number of configurations, ...) compared to $\re(\Pi)$.
+    \item $\Pi'$ must not be \emph{too easy} compared to $\re(\Pi)$.
+\end{enumerate}
+We want to do this multiple times, and construct a sequence $(\Pi_i)_{i\ge1}$ satisfying the following:
+\begin{itemize}
+    \item $\Pi = \Pi_1$
+    \item $\Pi_{i+1}$ is at least as easy as $\re(\Pi_i)$
+    \item Let $k$ be the largest $k$ such that $\Pi_k$ is non-trivial (not $0$-rounds solvable). We obtain that $\Pi$ requires at least $k$ rounds.
+\end{itemize}
+Observe that requirement 1 is needed so that the non-triviality of $\Pi_k$ indeed implies a lower bound for $\Pi$. Requirement $3$ is needed because, if for some $i$ $\Pi_{i+1}$ is much easier than $\re(\Pi_i)$, then we cannot hope to get a tight lower bound. In fact, imagine the real complexity of $\Pi$ to be $T$, and suppose that $\Pi_2$ is $T-5$ rounds easier than $\re(\Pi)$. Then we cannot hope to get a lower bound which is better than $5$. But maybe $T$ was much larger than $5$.
+Requirement 2 is needed to keep the whole operation tractable. In fact, we typically have a stronger goal than just keep the problems small. The \emph{real} goal is to be able to describe the whole sequence $\Pi_1,\ldots$ in a closed form. An example of a convenient closed form is a problem where some exponents depend on the index $i$ of the problem. We will see some examples soon. Before that, we first need to discuss how we can actually make a problem \emph{easier and smaller} at the same time.
+In fact, there is a simple way to make a problem smaller: just discard some labels, and all configurations containing those labels. Unfortunately, this would make a problem \emph{harder}, not easier, because we are removing allowed configurations. However, there is something similar that we can do, that makes a problem \emph{easier}: merging labels.
+Let us see an example with LOC, and in particular we see what it means to merge $\X$ and $\Y$. We modify the problem so that, every time $\X$ is allowed, we allow also label $\Y$, and vice versa. We obtain the following problem $\Pi'$.
+\begin{flalign*}
+& \A^2 \s \X\Y &\\
+& \B^2 \s \X\Y &\\
+\\
+& \A\X\Y \s \B\X\Y &\\
+& \X\Y \s \X\Y &
+\end{flalign*}
+In a solution for this problem, we can always replace $\X$ with $\Y$ and vice versa (e.g., if a node uses the configuration $\A^2 \s \X$, and we change it to $\A^2 \s \Y$, we still obtain a valid solution). Hence, the following problem $\Pi''$ has the exact same complexity:
+\begin{flalign*}
+& \A^2 \s \X &\\
+& \B^2 \s \X &\\
+\\
+& \A\X \s \B\X &
+\end{flalign*}
+In fact, a solution for $\Pi''$ is also a solution for $\Pi'$, and a solution for $\Pi'$ can be converted in $0$ rounds of communication into a solution for $\Pi''$, by just replacing every $\Y$ with $\X$.
+The obtained problem $\Pi''$ is called $1$-arbdefective $2$-coloring, and it turns out to be solvable in just $1$ round. Suppose we were trying to prove a lower bound for LOC, and suppose that, in order to keep things simpler, we replaced LOC with $\Pi''$, which is a relaxation of LOC. Since $\Pi''$ is solvable in $1$ round, it would have not been possible to obtain a non-trivial fixed point starting from $\Pi''$.
+
+\begin{framed}
+In a very simplified way, the act of finding lower bounds via round elimination boils down to find the right relaxations so that we obtain a sequence of problems that are very similar to each other, so that we can describe all of them as a single problem parameterized by some parameter $i$.
+\end{framed}
+
+Is there a way to detect if a relaxation is good, or do we have to try all possible relaxations by brute force? We will discuss this later. We will now discuss some useful ingredients.
+
+\subsection{Zero-round Solvability}
+
+\subsection{Diagram}
 
 
 [TODO: 0 round solvability]
