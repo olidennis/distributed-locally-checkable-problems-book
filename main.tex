@@ -1114,10 +1114,95 @@ Check both problems on \href{\retor}{Round Eliminator}. Solutions \href{\retor#z
 Try the following: start from the first problem and compute $\re(\Pi)$ by pressing \retorcommand{Speedup}. What do you notice? Up to renaming, the obtained problem is equal to the second discussed problem. See it \href{\retor#7VdNj5swEP0r1ZyptNm95bY5VMqhyg+IUuQNA7UKNjJmvyL+e8c2LDaQZLNabdstyiHg9+bDY888cYB7WF5HkMDyAGyv+T3CEtabHzcQQcmqql34sqH3StdpCsvtAfRTaZZLVKlUBSYEJkwz46SFuOCasxyaJurpSt7lWHjkLuIBci6wsr5LprR7ypzdAb4z8QTLmyaCTMm6JPAqWuwa+kXAq7hgj7zgz5TGMmV5heQfM4XW9JtJBI1x423oVfEWfryd2ccJwoXpXHvpxBmKvyWlgpUlF1mcszvMY42PmhxRtWENu2i7iGADu92QJvPEPlDKos7zHu6A+Azs4jhQK35PFyeu0JaAgu1lLpXht0u0c0rFpJFwlilWxFwkXOG+zdXC0STBhOwCdVhvSrbk21ob//RgfFBsFJppLkWc0XGJzoEPhFmP8cEeHCHlj6XkQsdtKqN1apg9JrXC+EGqX1796CVcSrDgFU85owbr1ujcu7QeuP5JRSjrYZm5fpoA6YCCG3CAKzMEqHEX9L+BxqdMnf6Jk58+9Y5mG5tSF6k0YadK2F8MHxV1YQkEfV2E0DMqOW1EFTLgS1MMMCFFAFOMLs9rW94A9Q20qh2/y4n4YRqD3djiUm+5bkWVoTvJ1rdd6Y2JEx74S1P7i4aZluNL1JIDKJFo0teW04f1L1qwNs03WwyuU1e49hSmsBMXsQnE47jWVCXSLsr31JqPmv0fLX1Oa8IxPJr1t+2sX52e9eN5+cbBPyEwU/N0coYelwA7ScjjWTk4ohkDXYhmRRgpwm2rCKujimB5RrANzzTKpfIwIT2fTCt6Az+pk2oxkgmnN75KwO0KZqUYKoVCwQqcheKdhOKVHwWzUMyfDuc+HWah+FNCsd7MQjESim5c/udS4a7LZ1SKrRvUs1jMYvHvi4Vr04u0oh37s16c1Ytd0/wG}{here}. It makes sense: we have a problem that we would like to solve in $0$ rounds using a node algorithm, but we cannot, because nodes need to agree on an edge orientation. This is clearly solvable with $1$ round of communication. However, we actually need ``half'' round: it would be sufficient if each ``edge'' were a computing entity that could send the messages ``$\I$'' and ``$\O$'' to its endpoints.
 
 \subsection{Diagram}
+We now discuss the concept of \emph{diagram} (or \emph{diagram of the problem}, or \emph{diagram w.r.t.\ the passive side of the problem}, or \emph{diagram w.r.t.\ the passive constraint}). 
+The idea is the following: we want to compare labels, so we define a partial order on them. This order can be useful for many things:
+\begin{itemize}
+    \item The possible labels of $\re(\Pi)$ depend on the diagram of $\Pi$.
+    \item When performing mergings of labels, we can often infer from the diagram whether a merging would not work well.
+    \item How fast the number of labels grows when performing $\re$ steps often depends on the ``shape'' of the diagram.
+    \item The discussed feature that automatically computes fixed points essentially requires us to \emph{guess} the diagram that the fixed point is going to have (and we have some good default diagrams to try).
+    \item We can tell Round Eliminator to automatically perform mergings of labels as a function of how they look in the diagram. Many known lower bounds can be obtained by following this idea with a fixed rule.
+\end{itemize} 
+
+Let $C$ be a constraint. We now see how to define $D$ w.r.t.\ $C$. Unless specified differently, the diagram of a problem $\Pi$ is the diagram w.r.t.\ the passive constraint of $\Pi$.
+Let $\ell$ and $\ell'$ be two labels appearing in $C$. We say that $\ell \le \ell'$ if and only if, for any configuration $\ell \s \ell_2 \ldots \ell_\Delta \in C$, there exists the configuration $\ell' \s \ell_2 \ldots \ell_\Delta \in C$. In other words, $\ell \le \ell'$ if and only if, by taking an arbitrary configuration in $C$ and replacing an arbitrary amount of $\ell$ with $\ell'$, we still obtain a valid configuration.
+In order to nicely see this partial order between labels, we take the Hasse diagram of the defined partial order (where we merge labels satisfying $\ell \le \ell'$ and $\ell' \le \ell$ into a single node), that is, we proceed as follows:
+\begin{itemize}
+    \item First, create a directed graph $D'$ in which we put an arrow from $\ell$ to $\ell'$ if and only if $\ell \le \ell'$.
+    \item Then, create $D''$ by merging strongly connected components of $D'$ into a single node.
+    \item Finally, obtain $D$ from $D''$ by discarding from $D''$ the edges that can be obtained via transitivity, i.e., perform transitive reduction.
+\end{itemize}
+Labels that correspond to the same strongly connected component of $D'$ are called \emph{equivalent}: we could replace one with the other and vice versa, and Round Eliminator suggests to merge such labels (merging such labels does not alter the time complexity of the problem).
+It is typically the case that there are no equivalent labels. In that case, each node of $D$ would correspond to a set containing a single label. Hence, by a slight abuse of notation, we will also consider the nodes of the diagram as \emph{labels} (instead of \emph{sets of labels}).
+
+\subsubsection{Example: MIS}
+Recall that we encode MIS (on $3$-regular graphs) as follows:
+\begin{flalign*}
+& \M^3 &\\
+& \P \s \O^2 &\\
+\\
+& \M \s \O\P &\\
+& \O \s \O &
+\end{flalign*}
+We can see that $\P \le \O$. In fact, the only passive configuration containing $\P$ is $\M \s \P$, and by replacing $\P$ with $\O$ we obtain $\M \s \O$, which is allowed by the passive constraint.
+We can see that $\O \not\le \P$ because of the configuration $\O^2$: by replacing, e.g., one $\O$ with $\P$ we obtain $\O \s \O$ which is not allowed.
+We can see that $\M \not\le \O$ and $\M \not\le \P$ because of $\M \s \P$ (in fact, $\O \s \P$ and $\P \s \P$ are not allowed).
+We can see that $\O \not\le \M$ and $\P \not\le \M$ because of $\M \s \O$ and $\M \s \P$ (in fact, $\M \s \M$ is not allowed).
+
+However, observe since $\P \le \O$, it holds that $\M \not\le \O$ implies $\M \not\le \P$ because of transitivity. Hence we could have skipped some checks.
+
+\paragraph{Exercise.}
+Input the problem on \href{\retor}{Round Eliminator}. Check the \retorcommand{Diagram} tab and see that there is the same diagram that we computed (see it \href{\retor#tVRNb6MwEP0r0ZxZKZAbP2BvEbm3FLlhoNaCjYxJkyL+e8cGik3YdKVVT4Z5zzNvPjw9XCCOAsgh7oGdNb8gxHB8OTyL0y55iSCAhrXtZN4lp2eR7BKytrorCoifetC3xoANqkKqGnMCc6aZcThBXHDNWQXDECx0JV8rrB3yHL2Higtsre+GKT1+leO9Ho5M3CA+DAGUSnYNgft0SI3nv5JDhxxa6ooQOYTIeEsD4G1Wsyuv+QelFBesapG0YqnQXvxtkkIjZHBK9E/aQ1978FhvEH2X3n+ojxz1WYniRzL4af01axouyqxir1hlGq+aHD3tAzhCGlAB4WROGvIE0nRNl1VuP0iZ6KpqgWcg+wYe442gVvxCg561aDOlYGdZSWX4k4nKFdieEpZzVipWZ1zkXOF5Uj0SwolmdG+SjYA57IwtbsgPRbI+qP7WC5XWfIzBySHJQqGZ5lJkJbVfzN5cwE/oHl+lNxIKfm0kFzqbdN3Z6e2fMe8UZu9S/XFKSz++Kceat7zgjHbFbKPRmGW9c/1GFWm6dQe4vm2A1DtvSHrYm61GOyik80RnRGcCg0vdGpAHw7E9GDON+mK7SiuxkEbAVjGX6XFR0dWWQNCv0Ic+UMntS1QrA369oBUmpPBgijErPdhCe6h7Qatu5M+a6Hn5MlbZ2DKf6AWObxtViWNTJ+fWstwmjt/7rxXgGg2zaO7naSJ7UC7R6NeWs4R1Z86zbfNNjt5kzZWb2rCFPZjJYaB1N3wC}{here}).
+
+\subsubsection{Example: Arbitrary Orientation}
+Consider the problem of computing an arbitrary orientation, and in particular its edge-centric version.
+\begin{flalign*}
+& \I \s \O &\\
+\\
+& \I\O^3 &
+\end{flalign*}
+It clearly holds that $\I \le \O$ and that $\O \le \I$. That is, $\I$ and $\O$ are equivalent. Hence, the problem has the same complexity of the following problem (obtained by merging $\O$ with $\I$):
+\begin{flalign*}
+& \I^2 &\\
+\\
+& \I^3 &
+\end{flalign*}
+After this merging, it is easier to see that the problem is solvable in $0$ rounds.
+
+\paragraph{Exercise.}
+Input the problem on \href{\retor}{Round Eliminator}. Observe the diagram. It is a single node containing both $\I$ and $\O$, so the labels are equivalent. Round Eliminator also gives the message ``The following labels can be merged: IO''. We can perform the suggested merging by pressing \retorcommand{Tools $\rightarrow$ Operations $\rightarrow$ Merge}.
+It always makes sense to merge equivalent labels: the problem gets smaller so easier to understand, while keeping the same complexity of the original one. See the result \href{\retor#7VddjpswEL5KNc9UCps3DlBpH6ocAFHkDQO1CjY1Jpss4u4dG0hsQrPdVrvbqihSQuabP8+M50s6OEB0F0AGUQdsr/kBIYL7DzsIoGZNM37ffdmSoNFtnkMUd6BPtZHXqHKpKswIzJhmxskIccE1ZyX0fXBRV/KhxMpRniJ2UHKBjfVdM6WHp2Kw6+AzEyeIwj6AQsm2JnCTGL83FMKkp1cAvEkrduQVf6Iso5yVDVJ4LBRaw08mT3q6ozwvB/6ldLZuOsEL422deGmBAiLRlmUAFatrLoq0ZA9YphqPmryTe7iHJIjDAHaQJHM1WWb2oZl7mYD0GXiIM4Ba8QM1Lm1Qnw32spTKWLjCjLNCsSrlIuMK92OiG0rTVMMku7HvoUl4rmxizx1d3JAH64QsY2NNwVFoprkUaUEVO5fLBZYSd/HFQ+T8WEsudDomcSWnmd1j1ipMH6X65pSQvviiDCve8JwzmvFJRtMwpfXI9Vc6ft3OK831aQGkHnlD0MHGXES6OyF97qB3VZYG4Ebzlxs/qQ3towucSxN2qYRDBeNZZ0RbWQWCPoY+9IRKLhtRhQx4viozTEjhwRRjyvPOltdDlw3cpPxErs9jri+qAocmatWSCysYVWgVwqDmt/t80V2hcZjX1yM0KntQJtEkr63OWcUbM0+2rG+O5w3TVIWxB0vYjTHsve3982VvK4Tf23fc95u33fd/uu3fJOItMvnLSeT3KGMljGvCeE2i+BdoInx9mpgWs8MTK0dcccS4tf5rhhh+UKwEMSOIOLYbf2WIlSHemSGGC/oigrB/zVeOeIYjkr7/AQ==}{here}.
+
+\subsubsection{Maximized Constraint}
+In the case of MIS it was easy to see the label relation. The passive constraint is written as two \emph{condensed} configurations, $\M \s \O\P$ and $\O^2$, so it is easy to see that we can always replace $\P$ with $\O$: every time $\P$ appears in a disjunction, $\O$ also appears in the same disjunction. Please note that this is not necessarily always the case. We could have written the passive constraint of MIS as:
+\begin{flalign*}
+& \M\O \s \O &\\
+& \P \s \M &
+\end{flalign*}
+Here it is slightly harder (by a simple visual inspection) to detect that $\P \le \O$. 
+There is a way to write the passive constraint so that it makes it easier to compute the diagram. This version is called \emph{maximized} version of a constraint. Maximized constraints are both used in Round Elimination proofs, and by Round Eliminator to more efficiently compute the diagram.
+The maximized version of a constraint is obtained by computing the active constraint of $\re(\Pi)$ and then treating each set of labels as a disjunction in a condensed configuration. For example, the active constraint of $\re(\mathrm{MIS})$ (i.e., the result of applying the universal quantifier and discarding non-maximal configurations) would be the following:
+\begin{flalign*}
+& \{\O\} \s \{\M,\O\} &\\
+& \{\M\} \s \{\P,\O\} &
+\end{flalign*}
+The maximized version of the passive constraint of MIS hence is the following:
+\begin{flalign*}
+& \O \s \M\O &\\
+& \M \s \P\O &
+\end{flalign*}
+This form \emph{guarantees} that $\ell \le \ell'$ if and only if each time $\ell$ appears in a disjunction, $\ell'$ also appears in the same disjunction, which is much easier to check.
+Note that, once a passive constraint of a problem $\Pi$ is maximized, computing $\re(\Pi)$ becomes trivial (we essentially already have the new active constraint, and we have seen that the new passive constraint is easy to compute).
+
+\subsubsection{Partial Diagram}
+While the diagram of a problem may be hard to compute, there is an easy way to compute a good approximation of it (and in particular a subset of its relations), which often turns out to be equal to the real diagram.
+Suppose we computed $\Pi' = \re(\Pi)$, and now we want to compute the diagram of $\Pi'$. Recall that each label of $\Pi'$ is a set of labels of $\Pi$. 
+\begin{framed}
+    If $\ell \subseteq \ell'$, then $\ell \le \ell'$.
+\end{framed}
+Sometimes, when writing round elimination proofs, we do not care about the exact diagram, and we only really need the relations implied by the above statement.
 
 
-
-[TODO: 0 round solvability]
 \chapter{Other Lower Bound Techniques}
 [TODO: Marks, KMW, indistinguishability, ...]
 
