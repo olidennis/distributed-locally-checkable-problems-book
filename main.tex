@@ -60,6 +60,7 @@
 
 
 \newtheorem{theorem}{Theorem}
+\newtheorem{observation}{Observation}
 
 \newcounter{open}
 \newtheorem{oq}[open]{Open Problem}
@@ -1223,6 +1224,40 @@ Observe that the partial diagram given by Round Eliminator now does not contain 
 Please note that, for problems with passive degree $2$, Round Eliminator always computes the full diagram (because it is cheap enough).
 
 \section{Fast Universal Quantifier}
+We now see an efficient way to compute the active constraint of $\re(\Pi)$ given $\Pi = (\Sigma,W,B)$.
+The trivial way is to just apply the definition: we go through all configurations in $(2^\Sigma)^\delta$ and we check which ones satisfy that all choices result in configurations of $B$.
+There is a much better way, that one can prove to be equivalent:
+\begin{itemize}
+    \item Assume $B$ is given as a set of \emph{condensed} configurations. Equivalently, if we just have a set of normal configurations, we can replace each label with a singleton set.
+    \item We \emph{combine} two configurations at a time. Combining two configurations $C = \ell_1 \ldots \ell_\delta$ and $C' = \ell'_1 \ldots \ell'_\delta$ w.r.t.\ a permutation $\sigma$ and an index $u$ means computing the configuration $C'' = (\ell_1 ~\mathrm{OP_1}~ \ell'_{\sigma(1)}) \s \ldots \s  (\ell_\delta ~\mathrm{OP_\delta}~ \ell'_{\sigma(\delta)})$ where $\mathrm{OP}_i$ is $\cup$ if $i=u$ and $\cap$ otherwise. In other words, we pick a matching between the sets of $C$ and the sets of $C'$, then in one position we take the union of the sets, and in all the others we take the intersection. We add the result to the constraint.
+    \item We repeat until nothing new is obtained.
+    \item We discard non-maximal configurations. This operation can also be done at any point, not just at the end, the result does not change.
+\end{itemize}
+This procedure not only makes Round Eliminator faster, but it also makes it much easier to prove that $\re(\Pi)$ is the claimed one.
+Also, we will later see that the procedure that automatically finds fixed points is obtained by slightly altering this procedure.
+
+\subsection{Example: Edge Grabbing}
+Recall that the passive constraint of edge grabbing just contains the condensed configuration $\B \s \A\B$. Note that with $\B$ we are now implicitly denoting the set $\{\B\}$ and with $\A\B$ the set $\{\A,\B\}$. So we can only combine this configuration with itself, so let $C = C' = \B \s \A\B$. There are two possible matchings to consider:
+\begin{itemize}
+    \item $\B$ (of $C$) with $\B$ (of $C'$) and $\A\B$ (of $C$) with $\A\B$  (of $C'$). No matter the value of $u$, we obtain $C$ as a result. So nothing new.
+    \item $\B$ (of $C$) with $\A\B$ (of $C'$) and $\A\B$ (of $C$) with $\B$ (of $C'$). No matter the value of $u$, the result is $\B \s \A\B = C$. So nothing new.
+\end{itemize}
+Hence the procedure stops, and the only configuration in the active constraint of $\re(\Pi)$ is $\{\B\} \s \{\A,\B\}$, which is the same that we computed in \Cref{sec:re-edge-grabbing}.
+
+There is a property that is easy to observe:
+\begin{observation}\label{obs:comparable}
+If $\ell_u \cup \ell'_{\sigma(u)} \in \{\ell_u, \ell'_{\sigma(u)}\}$ then the obtained configuration is dominated by $C$ or by $C'$.
+\end{observation}
+In other words, it never makes sense to take the union between comparable sets: the obtained configuration is always going to be dominated by an existing one, so we can always discard such cases!
+
+Let us see how powerful this observation is. Recall that the passive side of $\re(\Pi)$ contains only the condensed configuration $C = \B \s \A\B^2$. Let us compute the active side of $\re(\re(\Pi))$. We can see that all the labels of $C$ are comparable to each other, so by \Cref{obs:comparable} we cannot obtain anything useful by combining $C$ with itself. Since $C$ is the only configuration present, this means that we are already done.
+
+\section{A Lower Bound for Bipartite Maximal Matching}
+We now have all ingredients to prove a lower bound for BMM. Round Elimination, when first introduced, was used to prove lower bounds for weak coloring on odd-degree graphs, and then, not much later, it was used to prove lower bounds for BMM. Finding a lower bound for BMM was a big open problem at that time. 
+
+Thanks to what we know nowadays, proving a lower bound for BMM via Round Elimination is now an easy task (at least compared to lower bounds that came later). In fact, BMM behaves \emph{particularly well} under round elimination, and not many known problems behave that well. In fact, similar problems behave much worse, such as MIS, $(\Delta+1)$-coloring, or even MM (when encoded in non-$2$-colored graphs). It is curious to obseve, after the fact, that the problems on which people decided to try Round Elimination first, happened to be the exact problem on which Round Elimination behaves nice (BMM and SO/EG).
+
+So in this section we will see a lower bound for BMM. We will not see the original proof, but we will use the knowledge that we got over the years to get a simpler proof.
 
 
 \chapter{Other Lower Bound Techniques}
