@@ -1202,6 +1202,28 @@ Suppose we computed $\Pi' = \re(\Pi)$, and now we want to compute the diagram of
 \end{framed}
 Sometimes, when writing round elimination proofs, we do not care about the exact diagram, and we only really need the relations implied by the above statement.
 
+\paragraph{Exercise: bipartite maximal matching.}
+Input bipartite maximal matching on Round Eliminator. Carefully check the diagram tab. What do you notice?
+
+It actually says \retorcommand{Partial Diagram}. Round Eliminator did not actually computed the diagram, but took a shortcut. To detect $\P \le \O$, it just noticed that each time $\P$ appears in a disjunction, $\O$ also appears with it. In order to really compute the diagram, use \retorcommand{Tools $\rightarrow$ Operations $\rightarrow$ Maximize} or \retorcommand{Tools $\rightarrow$ Operations $\rightarrow$ Full Diagram}.
+They both give the full diagram as a result, but the second hides the maximized constraint and shows the original one. Note that the diagram did not change, so the partial diagram was already the full one.
+See it \href{\retor#7VXbjpswEP2Vap6pFMgbH9C3KHlPWeQNA7UKNjImmyzi3zs2kNiE3V4jtVVeYjLneHzmYk8HR4ijADKIO2AHzY8IMWw+bJ+iz2L3tIYAatY0F/PO2LfW3ug2zyHed6DPtYFrVLlUFWYEZkwz43KEuOCasxL6PrjSlXwusXLI0/kdlFxgY33XTOnhqxj2dbBh4gxx2AdQKNnWBK4S43dGiBxCmPSW8qa3tUOODDkJgDdpxU684q8UUpyzskHSioVCu/GTCQrN1t5J0h20B9HPqA9/XX1aoLhHBHfXX7G65qJIS/aMZarxpMnRfhXABpKAEghbs1Kb7yBJ5nRZZvaDlIm2LK/wBKTfgYfzBlArfqRGTxvUlw0HWUpldrjGjLNCsSrlIuMKD6PglZUbWrHDb2QEz8nm7LmjqxvyQzWxniib1guVwHxYr8Yh6UGhmeZSpAVVXkzeXGApFhdfjCvnp1pyodNR142drv0Bs1Zh+iLVVyer9Mc3ZVjxhuec0TMx2agrJlkvXH+hjNTtPPlcnxdAKpvXHx2szJNGz09I65bWiNYd9C51qTfe6YvlnphoVBdzlykIkUsjYCmZQy73sxqJtrIEgj6GPvSKSi5volwZ8HJ5ZpiQwoPpjEnp2ibaQ5c3uKJ8IbfxmAuNqsChnKMPa/E4ftUv9941GmZe33bSSPagTKJRri3neqzbbZ5tmW9i83pqSsFYgCXsnW7svTn49ticHsDH3LzP3PT80dP4I9m4CVCr9u+drH8kwn9z+Lqv0GP0PkbvfzF6h8fmMXl/Y/Imff8N}{here}.
+
+Note that we could have written BMM as follows (we just replaced the condensed configuration by its three uncondensed configurations):
+\begin{flalign*}
+& \M \s \O^2 &\\
+& \P^3 &\\
+\\
+& \M \s \O^2 &\\
+& \M \s \O \s \P &\\
+& \M \s \P^2 &\\
+& \O^3 &
+\end{flalign*}
+Observe that the partial diagram given by Round Eliminator now does not contain any edge, but by maximizing we still get the correct diagram (and the same passive constraint as before). See it \href{\retor#7VbBbuIwEP2Vas5eiYRbPmBvCO5sGrnEyVqb2JHjUCjKv+/YIWAHl6qLaKUVFxzmPT/PjCczOcAWkphADskB6EbzLYMEFk/L5/iXWD3PgUBD29Yz4/K0MsvK/FtaUqu7ooBkfQC9bwy3YaqQqmY5gjnV1OgfIS645rSCvidnupIvFasd8ujMASouWGu1G6r08FQO+w6woGIPSdQTKJXsGgRnqdGdEGKHEKW9pbyrNnfIsSGnBHib1XTHa/6GISUFrVqGvrJSMbvxpwmKma29k7Fv8P1DtchXu06Ibz4u/ozafBrpvyU+K5l4JP+rk1/TpuGizCr6wqpMs51GoTX2lhWkZB0RWJp1RmABaTqlyyq3D+iZ6KrqDI9A9gE8nDeAWvEtNpisZfq0YSMrqcwO15hzWipaZ1zkXLGNdXhGZtbdCH9jEhtXpzRz6lTiLIAKeBtWA/NoVTD55sFooRNMaKq5FFmJtSpGIRcIBeDiwWAKvmskFzo7unRhxx67YXmnWPYq1R8nlfjHN+Ws5i0vOMWePNqwFEa3Xrn+jcloumnGud4HQLwrrygOMDPDBHt9hOsS1xjXFfQuNVQQV4ohXAgjDa8gMteKo6eQxoFQModcrid3JLraEhD6EfnQG1MyvAlzZcDTGzPBhBQejGeMns5toj00vMF1ynfkMh7zFjNVsuE6jxrW4nH8Wz+97K7RMIvmspKOZA/KJTOea8s5H+tWm2cL801sXk2NKTheQAi7Uo2999Hx/jfK2PUeHykB30l0/0npqZFwgFp1d/sW+OoY4/9o4rpd6JPz9g5T16o+Ru9j9N42eodm85i8N0zetO//Ag==}{here}.
+Please note that, for problems with passive degree $2$, Round Eliminator always computes the full diagram (because it is cheap enough).
+
+\section{Fast Universal Quantifier}
+
 
 \chapter{Other Lower Bound Techniques}
 [TODO: Marks, KMW, indistinguishability, ...]
