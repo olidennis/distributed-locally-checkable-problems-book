@@ -13,6 +13,8 @@
 \usepackage{cleveref}
 \usepackage[a4paper,margin=2.5cm]{geometry}
 \usepackage{framed}
+\usepackage[most]{tcolorbox}
+\usepackage[dvipsnames]{xcolor}
 
 \newcommand{\poly}{\operatorname{poly}}
 
@@ -36,6 +38,26 @@
 \DeclareMathOperator{\rere}{\overline{\mathcal R}}
 \newcommand{\ccs}{\mathfrak{C}}
 \newcommand{\ccc}{\mathcal{C}}
+
+\newcommand{\retor}{https://roundeliminator.github.io/re-experimental/}
+
+\newtcbox{\roundbox}{
+  on line,
+  boxrule=0.4pt,
+  arc=2pt,
+  boxsep=1pt,
+  left=2pt,
+  right=2pt,
+  top=1pt,
+  bottom=1pt,
+  colback=white,
+  colframe=black
+}
+\newcommand{\mroundbox}[1]{\text{\roundbox{$#1$}}}
+
+\definecolor{darkblue}{RGB}{0,0,139}
+\newcommand{\retorcommand}[1]{\textcolor{darkblue}{#1}}
+
 
 \newtheorem{theorem}{Theorem}
 
@@ -537,6 +559,10 @@ Let's now see the definition of $\Pi'$. Let $\Delta$ be the degree of the white 
     \item We now define $W'$ as a function of $W$ and $\Sigma'$. We define $W'$ as the set of all configurations $\{L_1, \ldots, L_\delta\}$ such that, for all $1 \le i \le \Delta$, it holds that $L_i \in \Sigma'$, and such that there exists a choice $\ell_1 \in L_1, \ldots \ell_\Delta \in L_\Delta$ such that the configuration $\{\ell_1, \ldots, \ell_\Delta\}$ is in $W$.
 \end{itemize}
 
+\section{Round Eliminator}
+Given a problem $\Pi$, we do not have to manually compute $\re(\Pi)$. We can use a tool called \emph{round eliminator}, which can be found \href{\retor}{here}. There, you can input a problem in the black-white formalism, by writing the active constraint on the left textbox and the passive constraint on the right textbox, by using the same format used in this book. By pressing start, you get some info about the problem. 
+By then pressing \retorcommand{Tools $\rightarrow$ Operations $\rightarrow$ Speedup}, you obtain $\re(\Pi)$. We will later see some other features of this tool.
+
 \section{Some terminology}
 We say that a configuration $L_1,\ldots,L_\delta$ \emph{satisfies the universal quantifier} if for all choices $\ell_1 \in L_1, \ldots \ell_\delta \in L_\delta$, the configuration $\{\ell_1, \ldots, \ell_\delta\}$ is in $B$. Hence we can say that $\ccs$ is the set of all configurations that satisfy the universal quantifier.
 We say that a configuration is maximal if it is included in $B'$.
@@ -706,6 +732,25 @@ Suppose that $\Pi = \re(\Pi)$ or $\Pi = \re(\re(\Pi))$. Then, $\Pi$ requires $\O
 \end{theorem}
 We thus get that edge grabbing, and sinkless orientation, in $3$-regular graphs, have deterministic and randomized lower bounds of $\Omega(\log n)$ and  $\Omega(\log \log n)$ respectively. As a side note, such lower bounds (and all lower bounds obtained via round elimination) also apply to regular balanced trees as well. Another note: the $\Omega$ notation in \Cref{thm:basic-lifting-fp} is hiding dependencies in $\Delta$ and $\delta$. While for our specific case it does not matter (because we are considering the problem on $3$-regular graphs), suppose we tried to prove a lower bound for edge grabbing in $\Delta$-regular graphs as a function of $n$ and $\Delta$. In other words, suppose we tried to prove a lower bound for a whole family of problems at the same time. Then we would have needed to use a different lifting theorem, that correctly takes $\Delta$ into account.
 
+\section{Exercise: Edge Grabbing on Round Eliminator}
+Try to replicate \Cref{sec:re-edge-grabbing} on \href{\retor}{Round Eliminator}.
+
+\paragraph{Step 1: input the problem.}
+Write \verb|A B^2| on the left textbox (\retorcommand{Active}), write \verb|B AB| on the right textbox (\retorcommand{Passive}).
+
+\paragraph{Step 2: get some info.}
+Press \retorcommand{Start}. Round eliminator gives some basic info about the problem. E.g., it says that it cannot be solved in $0$ rounds. We will later discuss how this is detected.
+
+\paragraph{\boldmath Step 3: compute $\re(\Pi)$.}
+Press \retorcommand{Tools $\rightarrow$ Operations $\rightarrow$ Speedup}.
+By default, the obtained problem has its labels already renamed (by default, sets are ordered in some way, and then renamed by using alphabet letters). In the \retorcommand{Renaming} tab, we can see that $\A$ corresponds to the set $\{\B\}$ and that $\B$ corresponds to the set $\{\A,\B\}$, which is denoted as $\mroundbox{\A\B}$ in Round Eliminator.
+If we want to see the configurations before the renaming, we can press \retorcommand{Old}. By pressing \retorcommand{Both}, we see the configurations before and after the renaming at the same time.
+We do not see if the obtained problem can be solved in $0$ rounds: by default, this is computed only when the passive constraint has degree $2$ (because it is otherwise heavy to compute). We could see that the obtained problem is not $0$-round solvable by pressing \retorcommand{Tools $\rightarrow$ Operations $\rightarrow$ Maximize} (we will later discuss what this does), but let us ignore this step for now.
+
+\paragraph{\boldmath Step 4: compute $\re(\re(\Pi))$.}
+Again, press \retorcommand{Tools $\rightarrow$ Operations $\rightarrow$ Speedup}. We see that the obtained problem is equal to $\Pi$.
+You can see the whole result \href{\retor#7VfBjtsgEP2VFWdXCu7Nt+TQW79g5VpsjF1UGxDG2WQt/3sHbGKT0ETrzW7bVRQpcuY9mMcw8OIO7VASRyhHSYfIVrMdRQlaP2x+xChCkjTNENk8rDcQaHRbFCh57JA+SBOXVBVC1TQHMCeamGlGiHGmGalQ30cTXYmnitYzssvZoYpx2ti5JVF6eCqHcR36TvgBJbiPUKlEKwFcpWbeE0I8I+C0h0+EWJPVZM9q9gIqk4JUDYX0tFTUDvxmdMLTV9A5Lfj1ciIcEoSXC4pngrKS8lvV6K2SaiIl42VWkSdaZZruNUz0iCO0QWkEdUBrlKanNFHl9gEk87aqJtgB2RV4yDOAWrEddFbWUFsCSLYVlVCGP4VyRkpF6ozxnCm6tSJX0cpKxPCN4TtAMxldHodNE8BYKKodDbUzD3Y2MxHkp1wTzQTPStgy7maZA77yc/xkHQOhYHspGNfZqOcsDqdqS/NW0exZqF+zGsIPP5TTmjWsYAROoYvB3jtZz0z/hErI9rTUTB8CIGyS1wUdWpnLA043NlcG6ueUUAdc2P3wzjsa1H9l2pYXwqQNlXDqhDnK29oSAPqCfeiFKhEeBBUy4PFgnGBccA+GHE5nbMvrofMBWrUD32mC0+PLOF+NOapUlXTYwnFSG/E4/k4fT/Q8aJiFPO+ekexBuaBGt7acKe28w7xYmG/W5vWRq9hY/hB2oQN7z1r+7ESNpLAK+aFOdKOLf4EcfM0YrVUttcaFTnRd1AJJYScaHCgaHemSE9nrHI/XubvHlxlTwABDd33wfn+TU12k3o3rtsZleVA/yxv/8r3SxwKpju1o9/C/N7VpwFzU3dY+ha39vResq69Xr7a1+J1sDS+3tfifs7WztO//8nW3tLul3d/TPpehpX3/Gw==}{here}.
+
 \section{Fixed Points}
 What we have seen in \Cref{sec:re-edge-grabbing} is an example of so-called \emph{fixed point}, and in particular a \emph{non-trivial} fixed point.
 Non-trivial here just means that the fixed point is not solvable in $0$ rounds of communication. I.e., the problem 
@@ -768,6 +813,9 @@ Consider the problem of $2$-color a $3$-regular graph. In the node-edge formalis
 \end{flalign*}
 An easy way to see that it is a fixed point is the following: if we pick any pair of configurations from the node side (including different permutations of the same configuration), or any pair on the edge side, the edit distance between them is $\ge 2$.
 This implies that, when we write down the configurations satisfying the universal quantifier, we only get the original configurations, where we replace labels with singleton sets. This ensures that the problems does not change when applying round elimination, and after two steps of $\re$ we get back the problem itself.
+
+\paragraph{Exercise.} Input the problem on \href{\retor}{Round Eliminator}. Press \retorcommand{Speedup} twice, see that you get back the same problem. Solution is \href{\retor#7VfBcpswEP2Vjs7qDLZv3OJDb/0ClzCKEVRTkDRCOHYY/r0rgQyyFTfOZBynwylY7632aXfFCy3aoXiJUYbiFpGtZjuKYvTwuPrF148rhJEkdT0sflvD71o3eY7iTYv0QZplSVUuVEUzADOiidlogBhnmpESdR0e6Uo8lbSakF3WFpWM09ruLYnS/VPRx7XoJ+EHFK86jAolGglglHSJ2flN5IUhJxixOq3InlXsBRTHOSlrClJooagN/GE0UxPaTc7+JmkLXxq+SLhSznIiJy0ovxdJFZGS8SItyRMtU033GjbaLDBaowRvIoweUJKc0kSZ2QeQzJuyHGEHpP+A+zw9qBXbwYylNbUlgGRbUQpl+MMSnBzD4QDJGCkUqVLGM6bo1mqNsIVxkGBSukQOG0MhFva20WZ/eDB7QG7KNdFM8LSAdnG3wRTwVZ/jJ2foCTnbS8G4TgcpZ+twt7Y0axRNn4X6M6kf/PCXMlqxmuWMwF10a9B3J+uZ6d9QBNmclpnpQwCEBnkT0KLIvC/gji/g7xp1U0qo+xc6H+66o0HpIzOyPBcmbaiE42BMUd5UlgDQ94UPvVAlwkFQIQMeL8UJxgX3YMjhdC5teT10GqBV0/OdJuD7Mk5OY4tr7pi9rVQVtO/ksLddGYOB4zf8eKmni4aZy/MhGsgelAlq5GvLGdNOB81bC/PNEb1xcoUbuhDCLgxi5/nM67ZUSwqnkB9pS7d699+xS15hSzeVF7ao3prwYFWXLOr8Nf9Ovwr4YsgGgq/+dzrXK6TZwj7MwizP/IdheGY+r/WzQKLj5EXQtq9vbmPAVNRFe5t97U58bf7c+gKfW5/iZWdJb/AhNtvZbGfzt9r/4mlJ1/0F}{here}.
+
 \subsection{Example: perfect matching}
 Consider the problem of computing a perfect matching in a $3$-regular graph. In the node-edge formalism, it can be defined as follows:
 \begin{flalign*}
@@ -781,6 +829,9 @@ For the same reason as $2$-coloring, this problem is a fixed point.
 
 Problems that satisfy the aforementioned edit-distance $\ge 2$ property are typically only problems that are so hard that one could prove lower bounds via different techniques. The more typical case is that the problem of interest is not a fixed point, and we need to find a non-trivial fixed point relaxation for it.
 
+\paragraph{Exercise.} Input the problem on \href{\retor}{Round Eliminator}. Press \retorcommand{Speedup} twice, see that you get back the same problem (up to renaming). Solution is \href{\retor#7VfBjpswEP2V1ZypBPTGbffQW5QPSCnyBkOtgo2MySaL+PeODQScOGmy7Wo3VbSHJfOePc8ztp/cwgai0IMUohbIWrENhQgWD8sfIXhQkboeI4vvfPmwxGCtmiyDaNWC2lUaq6jMhCxpimBKFNFTDRDjTDFSQNd5E12K54KWM/KYt4WCcVqbuSsiVf+V9+NaWBC+gyjoPMilaCoE/VjPe0AIZ4Qg7vDPA1YnJdmykr2iyigjRU0xPc0lNQO/aZ349RV1Tou+SE5oyzGCLiJfKS2cSUtyyj+jvJJUFeN5UpBnWiSKbhVOtAo8WELsrXwPFhDHhzRRpOYDFfGmKCZ4BJI/wH2eHlSSbXC/JTU1K8Rka1EIqflTKGUkl6RMGE+ZpGsj0vd8lBh4Qewg6FxjhhGbhuJYLK0ZjVXTH3oOTEq5IooJnuTYMz5OMAdsucf4gfiekLFtJRhXySDlKI4HbE3TRtLkRchfs8LhDzuU0pLVLGMED+QYw4aPsl6Y+olFqJrD+jK1c4DYGav1Lfj65sCDHuD/JXRziqvtZ1rubvdIw9L7eq/yTOi0rhJO7Z+jvCkNAaEvgQ29Uincg7BCGtyfhgOMC27BmGPUGZryWuh8gJJNzx814ZGxZRyvRp9PKnPat3CY1EQsjt3p/TGeBzUzq453z0C2oFRQrVsZzpR2vsOsmJuv12bto7FiQ/ld2Jkd2Fkuc9qU6oriKqp/aUof4QKfzC+vMKV3l+Q2IjxNj2DuaXg6b0THd/obXcnhfq4733nPv9GmTpDufnWhXz0OfvV00q8Mb6UNJ+j357Xm5TDG/c7zsW2372TTgLmou5fdgpfdH1g39sD6EF87SvqeT6+7p92Ip1mJ/jNPu7/O/tbR4q77DQ==}{here}.
+
+
 \subsection{Example: sinkless orientation}
 Sinkless orientation on $3$-regular graphs can be defined in the node-edge formalism as follows:
 \begin{flalign*}
@@ -793,6 +844,9 @@ One can also check that this problem is not a fixed point. In fact, one can chec
 But we have already seen that EG is a fixed point in \Cref{sec:re-edge-grabbing}.
 Since $\re(\re(\mathrm{SO}))$ is a relaxation of SO (the $\re$ operator guarantees that), we get that EG is a fixed point relaxation of SO. One can also check that EG is a non-trivial problem (we will later see how), and we hence get that EG is a non-trivial fixed point relaxation of SO.
 Unfortunately, this is really an exceptional case, problems do not tend to naturally become fixed points after few steps of $\re$.
+
+\paragraph{Exercise.} Input the problem on \href{\retor}{Round Eliminator}. Press \retorcommand{Speedup} \emph{four times}, see that, after two steps, we obtain EG, and after two other steps, we obtain EG again. Solution is \href{\retor#7ZjBjtowEIZfpfI5lRL2xg0OvfUJVmzkJU5qNbEjx2Fho7x7x05MYjBQWNiF1uJA8Iw9f2ZsfxoatELTSYASNG0QXkq6ImiKZt9m85cJClCJq8oMzeF3Jes0RdPnBslNqYZLIlIuCpKAMcESq2V6E2VUUpyjtg0Gd8Ffc1KMnE3MBuWUkUqvXWIhu6esm9egn5ht0DRqA5QJXpdgDBdq3R2HydghiBYtfAJEq7jAa1rQd9A5TXFeERBAMkH01B9KKTw9gdLhja8jaOxwppzJSE6cEXYvkgpclpRlcY5fSR5Lspaw0HMUoDlaBJB1NEOLxa4bzxP9AJJZneeD2RjiE+YuTmeUgq5gZ8UV0SmAYEuec6H8h6GE4kzgIqYsoYIstcgwCEFiBBvD4aBimQjGNkyFuZBOPRuyph7UGhCUMIkl5SzOoE7MLDA22HL37TviO4eUrktOmYx7KXvjcJSWJKkFid+4+D1KHPywhxJS0IqmFMPRM2NQcCPrjcpfkISy3s0vlRuHESpjlb5Boboe4EhH8D1H7djFVfYjJXeX27hB6kO1V1nKVVhXCofyj62sLrQDmL5HtumdCO6eBBlSxu1p2LExziwzxDA6Jzq9lnU8QYq68zea4MjYMvbfRp1PIjLSlbBfVI9YPnalt8d4PKg803J/9/TOlinhROmW2mcIO95h1pjbX72btY9Mxvr0u2xHdmBr8eQwfqqSwFuUt8JPdOpqDS+/7e+OhtfEz+Ry/Dwdxk+HnaDH0DH87N/kF7LIwTzXTe+83Y/B6SSiDnDsGKv0sh5YZwFL+z0r4kT9eT+TXo5A202ojuPjo2yYMBblYfZoMLvJRX05zE6zNfj8XuomwL8qzFRWPoKzvbAf7LP0Hfe3KDsXaOZlPdAuBJo+Qx5pvjv7b4B2pf/irsWOr+7OTov6qu4s+hygXdSfnQE1p6uH2i2gFnmo+T7N92m+T7vnPi16/D7NI80jzfdp/wbQFm37Bw==}{here}.
+
 
 \subsection{Example: sinkless and sourceless orientation}
 Sinkless and sourceless orientation on $3$-regular graphs can be defined in the node-edge formalism as follows:
@@ -814,6 +868,8 @@ which can be also written as
 \end{flalign*}
 which is the same node constraint as sinkless orientation.
 In other words, we can relax SSO to SO, and SO to EG, and EG is a non-trivial fixed point. We get that SSO admits a non-trivial fixed point relaxation.
+
+\paragraph{Exercise.} Input the problem on \href{\retor}{Round Eliminator}. Press \retorcommand{Speedup} some times, and see that at each step we get one more label. Solution is \href{\retor#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}{here}.
 
 \subsection{Example: 3-coloring}
 Consider the problem of $3$-coloring $3$-regular graphs. It can be defined as follows:
@@ -866,6 +922,7 @@ One can prove that this problem is a fixed point and is not trivial.
 
 Summarizing, $3$-coloring is not a fixed point, but we can find a non-trivial fixed point relaxation of it that requires $8$ labels to be described, and this fixed point has a natural interpretation.
 
+
 \subsection{Example: locally optimal cut}
 Not all fixed points admit a natural interpretation. We will now discuss a problem for which proving an $\Omega(\log n)$ lower bound has been significantly harder.
 The problem is the one of computing a locally optimal cut (LOC) in $3$-regular graphs. A locally optimal cut is a $2$-coloring of the nodes satisfying that, if a node has a color, it needs to have at least two neighbors of the opposite color. It is a locally optimal cut in a game-theoretic sense: if nodes try to selfishly maximize the number of neighbors of the opposite color by unilaterally deciding to change color, then this problem is a Nash-stable solution. This problem is also called $1$-defective $2$-coloring: it is a $2$-coloring where nodes are allowed to have at most $1$ neighbor of the same color. This problem is also called unfriendly partition or majority coloring.
@@ -904,6 +961,15 @@ For quite a white we did not have an alternative proof of hardness, and this pro
 \end{flalign*}
 This is a relaxation of the original problem: if we rename $(\A\X)$ to $\A$ and $(\B\Y)$ to $\B$, we get that the allowed configurations of LOC are allowed also here. However, differently from the case of the fixed point relaxation of $3$-coloring, it is quite hard to get some intuition about this problem. Does it have some natural interpretation? We don't know.
 This fixed point was found by hand, by manually trying to relax the problems obtained by applying $\re$ on LOC. However, by carefully analyzing this fixed point, one can actually find some very hidden pattern. In fact, there is a mechanical way that one can use to obtained this fixed point by starting from LOC. We will later discuss this mechanical procedure. The same procedure, applied to $3$-coloring, gives the fixed point relaxation of $3$-coloring that we have seen earlier. In fact, all known fixed points can be obtained by applying this procedure, and discovering this procedure allowed us to find non-trivial fixed point relaxations that are so complicated (hundreds of labels) that finding them manually would have been hopeless.
+
+
+\subsection{Exercise: getting fixed points automatically.}
+Input the $3$-coloring problem on \href{\retor}{Round Eliminator}. As mentioned, there is a mechanical way to obtain a non-trivial fixed point relaxation for it. Round Eliminator implements this procedure, and it can be used by pressing  \retorcommand{Tools $\rightarrow$ Fixed Point Tools $\rightarrow$ Basic}. Try it, see that the obtained fixed point is the same as the one previously discussed. Solution is \href{\retor/#7VbbjptADP2V1Ty10qzEJYQqb0mkvvULtllEwkBHhQFx2VvEY6V+Z7+ktmE2kKVhUdOorfbFceac8dgem/Ge3bGFxVnAFnvm70p5J9iCLW/tz2qFYn1rM84yvyha5Gq1BuhqDatFWYUhW9zsWfmYIZiJPEzzRAQABn7po80WkkqW0o9ZXfMDPU+3sUg6ZO3AnsVSiYJsZ35eNlrU7NuzT756ZAu75izK0yoD0NjUG7T8KrI5hWwhecOZLLzEf5CJfILwFqEfFwL8FlEuaONHDFDg1rqTrlfFYfbj4CcJJrfGvDf7oZ62NzE8qxOeFwn1v4aY+FkmVeTF/lbEXikeSjB0Y3C2ZBsOHrIV/kLfrNlmc0xP44AUcF1VcXyANeCNwM15DVjm8g4axysEpQIO26VxmiO/XYKMgkvoDroSSD/K/cSTKpC52LV+E4UTiQ/S8HB9pMYOBsACnEI24CSygqeBgrbAG6FKv5Sp8iIoDKUNdYF+HC/xo6gaQigfslSq0mtderEOn5CdCKpcePdp/rWTUfjTXwpEIgsZSh8+OXoNKkK7dS/LL5CMrDpOvCwfB0C4sl5t7JmBH0f4lJnwu4JfC37XrO5Sh+riRE0M14OmwZVgo0AQKkzRgaFkHoqmi6oqIQJA12YfehJ5OrwJcoXgc+McYSpVPRjO0J7alOge2t1Q5lXD1z4Bv+/GUTSUZkwx9F7T1SKPRHOvrX1aORgATv/6n5u/u4jMMHtZUi25BwWpwBBK4hyO7ZZdb22Yj2H2iksnr72JIexEWda9x/XXb7HunuutX8gdPuTVVlv4I6/zpAfXmUJ2x8hW/yHgY0/T663Nzmpt/tvWumR7yJp1bO1yUw0ffaQN7vA5d6cEiR/AGW4ZtTzVqoVbxqxO83XcHh5rQ0DPebjoVDZ6QfMp4Y72xqQrGe3b816Ffc558cf3b+3EuGwnxnfL1XtUbVLXpM9Qb1SnnS3nsNSi7t8xZuL06KA7Y2Nmd9g0SOrBE6VDsRskTZIWSZvkjGTDmZN0KT8GSZPkjKRLyTJIOpQwg2Sjz0m6lD2DpHu2sRe9giohL6DUyQPIDJ0IfUKnYZZAabOhM+B04p09x6jjOkSko9D+v03ZnSkbW6qZs5ftnE0txZndqGvUZ6ST6rQT+RyXGtS9yHDe+Zz/A2P6h7cx/WJj+qaufwI=}{here}.
+
+Now try the same on the LOC problem (solution \href{\retor/#7VfNbtswDH6VQqcWUAH/xfFySw677Z6gzQw3VjJhjm3YTv+CHAfsOfckIykpsROvrou0wIBeaFkfRZEUKZFbds9GDmcxG21ZtKjkvWAjNv7uXExv0wl8ZoyzPCpLDUwvJrPbdDq7mCJQVpvlko1utqx6yhHPRbHMirWIAYyjKkKpGpKprGSUsN2OH9iL7C4R6xqzUWHLEpmKkmTnUVGp0Uqt27JvUfoEeu84WxXZJgfQmqPcIwa7xmDPd8TyKmlOlzQXpc05k2W4jh7lWj6DzaNllJQCjBGrQtDCr2g1jFyw+uDGVxlX383idpdCDnf7GGjznhY4NQvClUjfYkWnDe9vwTrKc5muwiS6E0lYiccKRIF/2ZjN+Y3L2Qy/kBAT/NqcTdl8frwsS2IagI7pJkkOsAHCDljtq8CqkPeQF2EpyGbYbJElWYH8eoqOn9MJAxrLaFVE61CmsSzEQutvAYNiszWzo5egVa0LUR2jhMEOIkEaHBjJg9QhWXA+JA2CHwd1tUA8qCzSKqpkloYrCJLUyK4DTWNP8SPTFcNSPuaZTKtQa3kyD9fIQsSbQoQPWfGz5nb4aU7FYi1LuZQRXDtmDsLHqPUgqx/gn3xzfDqyemoB4VwbgbRlFt6RcJ3Z8J3C14HvBL4ufGdsV1/SFkQvBFB78Bg2OAuXO3gecM8uM1Slza2HGKuj6WZNDABd203oWRRZ+yLwGoL7fDvC0ixtwLCH0dUjlzfQ+oKq2Ch+oxMkY1ONI2vgUQIPTzBx6SoQxUqo89XSaeawHHiaYbC/MeqTyLnMT0NLMzegOBNoQEU8h23r4deYa+dHIxtBZlynz6ENeyE8d42H9t/vssmi67uolAt81Dd3RsK7vNSdT5nX5xkYdkkLuqTZfd59v4vB6rOd2yVt8P7bOX0836mb08fzbtOxH1tQca/Tt3zIe0WP1S3Rhlva5R4fcL+39Ndo/EbJNinl47KuHYI+2WkZqR9canbeMcOznqvTR5r3iqQ/4xXS67z8c5bUf37/0kX05Xh6pevqy/FkOrvSxTbMq7FHhTa/GcCcwX0Y6+EQp9UwoBL9Q0ty8EpbVY43CKoWvFyV25qq2twjL1hEj+t0R6MDoj7RIdGA3GURtXVFj9Qj6hMNyI0WUY9caRFV4wFRn+iQaEAutoh6RH2iARllER1qA9HtFtHg7J0E6gs5QTpB6JMO5HHYGdKUdoUgpo7D+M/d+8n4w99bX7fSWBY07PjsVmrdCiap6lcoSVXLopNU9S0qSTnzdE8zwDmN+zhWwyFN0zB4/27n+B39D/qeL7W+RzU57fztfY+5C0+6Hzw2PBb0/WcPdNIDzXe7vw==}{here}). What do you notice?
+Yes, the obtained problem is solvable in $0$ rounds. So the mentioned procedure does not always succeed, even for problems that admit a non-trivial fixed point relaxation. There is a way to tweak the procedure so that it works on LOC (we will discuss this procedure in more detail later). Start again from LOC. This time press \retorcommand{Tools $\rightarrow$ Fixed Point Tools $\rightarrow$ Generate Default Diagram}. Then, scroll down, and on the obtained problem, in \retorcommand{Tools $\rightarrow$ Fixed Point Tools $\rightarrow$ With Label Duplication}, click on label $(\X\Y)$ and then press \retorcommand{Add from diagram selection}. Then press \retorcommand{Generate Fixed Point}. We now obtained (up to renaming) the same fixed point discussed earlier (solution \href{\retor/#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}{here}). 
+
+
 
 \section{Relaxations}
 We now put the discussion about fixed points aside, and we go back to the basics. We are given a problem $\Pi$, how can we try to construct a problem sequence that gives a lower bound? If we compute $\re(\Pi)$, and then $\re(\re(\Pi))$ and so on, for most of the problems of interest we quickly get so many labels that it is hard to find a natural interpretation of the problem, or to even compute the next problem. The basic goal to apply round elimination successfully is to manage to do the following. 
@@ -944,7 +1010,38 @@ The obtained problem $\Pi''$ is called $1$-arbdefective $2$-coloring, and it tur
 In a very simplified way, the act of finding lower bounds via round elimination boils down to find the right relaxations so that we obtain a sequence of problems that are very similar to each other, so that we can describe all of them as a single problem parameterized by some parameter $i$.
 \end{framed}
 
-Is there a way to detect if a relaxation is good, or do we have to try all possible relaxations by brute force? We will discuss this later. We will now discuss some useful ingredients.
+Is there a way to detect if a relaxation is good, or do we have to try all possible relaxations by brute force? We will discuss this later. Before that, we will discuss some useful ingredients.
+
+\paragraph{\boldmath Exercise: merging $\X$ and $\Y$.}
+Input the LOC problem on \href{\retor}{Round Eliminator}. 
+Then, relax the problem by merging $\X$ and $\Y$:
+\begin{itemize}
+ \item Press \retorcommand{Tools $\rightarrow$ Simplify}
+ \item Choose label $\Y$ as \retorcommand{From}
+ \item Choose label $\X$ as \retorcommand{To}
+ \item Press \retorcommand{Merge}
+\end{itemize}
+Press \retorcommand{Speedup} twice. Observe that the obtained problem is $0$-round solvable (solution \href{\retor/#7VlLc5swEP4rGZ3VGV69+BYn6a13exKXoUa4mvIawHl5+O9drUQQmGCwSet0fLEI+9DuatH3SdmRRzKzKPHJbEe8dcEfGZmR6x/W1eIhnsOwJJSkXp4rweJqvnyIF8urhRDkxTYIyOx+R4qXVMhTlgVJFjEfhL5XeMKrEvGYF9wLSVnSWj1LfoYs0pSrEHYk5DHL0XfqZYV82ki7HfnuxS8Qd0nJJku2KQiNlfDbUjA1BXNVosogb9Yhb7bwtqKE527kPfOIv0LOs8ALcwbJsE3G0PCbyBqebMi6LuOg5PTZDGoeCsii9pgETToyA0vLwN2w+JgsDubw8RlEXpryeOOG3k8WugV7LsAV1JdckxW9tylZihE+iLkYTUoWZLVqmyWhjw8QY7wNw1pcCdwDYjmvFBYZf4Tvws0Z5gyTrZMwyYS+eoXLT3GFQepzb5N5kctjn2dsreI3QEGqmUrZUiYiq05DEU4VRCWrXYI3WDD0B58O+oL1QW/Q/OJBDwvcQ8gsLryCJ7G7gSaJK9+6oJnsvryVulQI+HOa8LhwVZR772EbWTN/mzH3Kcl+a2WHP5qvfBbxnAfcg22negftU4X1xItfUJ90214dXrx0CGFdG420I4bYI2E7M2FcwGjBOIfRhnFJSt2kq4l6Gqi7eSo1WAubWmI9YJ8NEhFKV1nrHtOl8TZCBRB9MZuiV5Yl3UZQNSF8+95asjiJG2KYo4rVwZI3pLpBkW2lfhUTfIzNMFrZAChBhefiw8WtgGUbJtdXecc3tTnoNNvgbcfQXwrNIN1vLaXcEPkJEwkUqFNPq7df4123vkiy0WRV6dQ6dMl62rNsAO37uJzzKA0h7TWuHdYKlIIsibBnYY4Em/n/wG3z3HDbpNaZAvGkyHqWiCpqPwJRK1ydCkt1DDUvGNqPoR+KnZ8EOe0PQc7F/IKcxyFnyiCLdEpkbEHVicelUXv+CefBI2AfT2/0EHjSkadaa5TX42jACMy1xqymMSnPMY5IsB/BTYXgsKncqLPybT+SI+6ZCvcE0Enkk6grzpG4Fivdxzi476EXXSDZCYyHwN/Ag7SBB2lT0QF7zAF7MJc44uwtg6sCupzDOznEXHGIG3UOv32XS6DdvaACpiLvaIkdi7aqY8uxhKOH1GgsRG5Mn/8EXxvoQfUykQsBORMCMgqynEkhy5mazpw4nf3PrvthQ6fOgAt/OqpkzkBqJL3+1QuJaamuMzE5so4lR/Qedsq7ASTJrsAeiQTCvXyykS7JZ4e+YcQUlOldPte6PsHg9m9QTGgTYSx+B/1fQidSBprpdKpyV5Mq5VoRLAcL4AylWUewtsH0C1fC6aNhMuALGRtExihxYLw7QMpsRcqwyEjKJFeyJT3DZ0c/3p1G0To5Y5uqiaY8f7L2VSNr8oaon6vZDaqG29jevdH8DupyI35uL3dHbeq2Kss/}{here}).
+
+
+\paragraph{\boldmath Exercise: $3$-coloring fixed point.}
+We have seen that finding a non-trivial fixed point relaxation for $3$-coloring is easy by using an automatic procedure. 
+Historically, the fixed point for $3$-coloring was found before the discovery of this procedure, by just merging labels. Try to find a non-trivial fixed point in this way. This exercise is non-trivial. However, it becomes easy by following this idea:
+\begin{itemize}
+    \item We can ask Round Eliminator to use a different strategy for renaming of the labels, that renames the obtained labels as a function of the labels that compose them. This feature can be found at \retorcommand{Tools $\rightarrow$ Operations $\rightarrow$ Rename by generators}.
+    \item Start from $3$-coloring, then repeat the following: press \retorcommand{Speedup} and on the obtained problem press \retorcommand{Rename by generators}. 
+    \item After this renaming, the set $\{\A,\B\}$ is now renamed as $\langle \A, \B \rangle$.
+    \item By doing this operation twice, we obtain things that look like the following: $\langle\langle\A,\B\rangle\rangle$ and $\langle\langle\A\rangle,\langle\B\rangle\rangle$. Interpret the former as ``$\A$ \emph{and} $\B$'' and the latter as ``$\A$ \emph{or} $\B$''.
+    \item Try the following merging strategy:  merge ``or labels'' toghether, then rename in some arbitrary way so that $\langle$ and $\rangle$ symbols disappear, by using \retorcommand{Tools $\rightarrow$ New Renaming}, then repeat. You will eventually get a non-trivial fixed point. In order to merge more than $2$ labels together, you can either use the already mentioned \retorcommand{Simplify} feature multiple times, or you can use the \retorcommand{Group Simplify} feature to do the same in a single step.
+\end{itemize}
+The solution can be found \href{\retor/#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}{here}.
+This exercise shows why it took so much to get a non-trivial fixed point relaxation for $\Delta$-coloring: we had to essentially guess a good strategy. Try to play with $3$-coloring: try different relaxations, try to not perform relaxations at all. You will notice that one of the following will happen:
+\begin{itemize}
+    \item The problem becomes $0$ rounds solvable.
+    \item The problem becomes solvable with $4$ or more colors. Note that $4$-coloring $3$-regular graphs is \emph{easy}, i.e., it can be done in $O(\log^\star n)$ rounds. Hence if we get a problem solvable with $4$ colors it means that it is not possible to apply $\re$ and perform mergings of labels to get a non-trivial fixed point.
+    \item The problem becomes too large. You can see that if you do not perform any relaxation at all, the number of labels grows exponentially at each step.
+\end{itemize}
+However, ``merging \emph{or labels}'' is a strategy that works for many other problems. An example in which it fails is LOC.
 
 \subsection{Zero-round Solvability}
 A zero-round algorithm is just a mapping from a node's initial knowledge to a configuration. In the LOCAL model, the initial knowledge of a node includes its own ID, which means that different nodes may output different configurations. However, as discussed, when using round elimination, we first prove a lower bound in the deterministic port numbering model, and then we lift it to the LOCAL model via some lifting theorems. This helps a lot in determining when a problem can be solved in zero rounds: in the deterministic port numbering model, the initial knowledge of the nodes is the same. Hence, all nodes must output the same configuration, in the same way (i.e., all nodes are going to output the same label on, e.g., their first port).
@@ -963,6 +1060,18 @@ Recall that BSO is the following problem:
 Let us see why this problem cannot be solved in $0$ rounds.
 All white nodes must output the same configuration, which is any configuration that can be picked from the condensed configuration $ \A \s \A\B^2$. Any such choice must contain the label $\A$ at least once. This means that we can force $3$ white nodes to output label $\A$ towards the same black node. This black node is going to have the configuration $\A^3$, which is not allowed by the black constraint.
 
+\paragraph{Exercise.}
+Input the problem on \href{\retor}{Round Eliminator}. First, observe that, by pressing \retorcommand{Start}, the problem becomes:
+\begin{flalign*}
+& \A \s \B^2 &\\
+\\
+& \B \s \A\B^2 &
+\end{flalign*}
+This is because Round Eliminator notices that some configurations are useless: e.g., any white node outputting $\A^3$ could change its output to $\A \s \B^2$ while still satisfying the black constraint. It is somehow the same as discarding non-maximal configurations when computing $\re(\Pi)$. This is detected by using the so-called \emph{diagram} of the problem. We will discuss it later.
+
+Then, observe that Round Eliminator is not computing whether the problem is solvable in $0$ rounds. Press \retorcommand{Tools $\rightarrow$ Operations $\rightarrow$ Maximize}. Now we see that the problem is not $0$ rounds solvable. Solution \href{\retor#7VXNjpswEH6Vas5UgvTGLTn01ieIKPKGgY4KNjImmyzi3Ts2IbEJzapd9VApioSc+ebn8/x4BjhCuomggHQAcTB0REhh+2m7+76BCFrRdZNoN4s605clpPsBzLm1SIu6VLrBgsFCGGE9XSCSZEjUMI7RTV2rlxobT3kOO0BNEjvnuxXaTKdqshvgm5BnSJMxgkqrvmUwzqzfhcLGU0iykX8RUJc34kQNvTHLtBR1hxweK43O8KvlyacvzPN25T+mk7xHJ44+QCivUP4TUn9BqRFtS7LKa/GCdW7wZNjRPolgB1nE14QtZNlSTdWFOzBl2df1DZ6B/B14ijOBRtOROyvv0FwNDqpW2lr4woJEpUWTkyxI48ERjaPY0Uz4m/A3u1ezUZcubg7YlvPmrDnB9uC8WUfMAKURhpTMKy6bnL34wBp7H1+9SUmnVpE0+YXPnZwn64BFrzF/Vfqnl0f+E4oKbKijkgRP4izj+s+0Xsn84Ey0/TLdZM4rIBcq6IQBYvuG8IQn9uGA0VdZ64IHHbBe/VmN8x/b1pWlsmHXUjhlcL+ojOwbp8DQ5ySE3lCrdSPOkAWvw7HApJIBzDFmnhuX3gBdN/BJhUTu72MHFnWFUxEvPpwk0AlrfZ1rX2g1y/a+fy7KAVQotMyN07mF9XsskK3r27sFnTSn4FKANexBD47Bgvn9PpofuOdCeryQjO6f++gD+8gf2Oc2em6j/2obTcP/XEYfWEbZOP4C}{here}.
+
+
 \subsubsection{Example: Bipartite Maximal Matching}
 Recall that we encode BMM as follows:
 \begin{flalign*}
@@ -973,6 +1082,10 @@ Recall that we encode BMM as follows:
 & \O^3 &
 \end{flalign*}
 Here we have two cases to consider, either all white nodes output $\M \s \O^2$, or they all output $\P^3$. In the former case, we can force a black node to ``receive'' two $\M$s, which is not allowed. In the latter case, we can force the configuration $\P^3$ on a black node, which is not allowed. Hence, BMM is not solvable in $0$ rounds.
+
+\paragraph{Exercise.}
+Check it on \href{\retor}{Round Eliminator}. Solution \href{\retor#7VXbjpswEP2Vap6pFMgbH9C3KHlPWeQNA7UKNjImmyzi3zs2kNiE3V4jtVVeYjLneHzmYk8HR4ijADKIO2AHzY8IMWw+bJ+iz2L3tIYAatY0F/PO2LfW3ug2zyHed6DPtYFrVLlUFWYEZkwz43KEuOCasxL6PrjSlXwusXLI0/kdlFxgY33XTOnhqxj2dbBh4gxx2AdQKNnWBK4S43dGiBxCmPSW8qa3tUOODDkJgDdpxU684q8UUpyzskHSioVCu/GTCQrN1t5J0h20B9HPqA9/XX1aoLhHBHfXX7G65qJIS/aMZarxpMnRfhXABpKAEghbs1Kb7yBJ5nRZZvaDlIm2LK/wBKTfgYfzBlArfqRGTxvUlw0HWUpldrjGjLNCsSrlIuMKD6PglZUbWrHDb2QEz8nm7LmjqxvyQzWxniib1guVwHxYr8Yh6UGhmeZSpAVVXkzeXGApFhdfjCvnp1pyodNR142drv0Bs1Zh+iLVVyer9Mc3ZVjxhuec0TMx2agrJlkvXH+hjNTtPPlcnxdAKpvXHx2szJNGz09I65bWiNYd9C51qTfe6YvlnphoVBdzlykIkUsjYCmZQy73sxqJtrIEgj6GPvSKSi5volwZ8HJ5ZpiQwoPpjEnp2ibaQ5c3uKJ8IbfxmAuNqsChnKMPa/E4ftUv9941GmZe33bSSPagTKJRri3neqzbbZ5tmW9i83pqSsFYgCXsnW7svTn49ticHsDH3LzP3PT80dP4I9m4CVCr9u+drH8kwn9z+Lqv0GP0PkbvfzF6h8fmMXl/Y/Imff8N}{here}.
+
 
 \subsubsection{Example: Arbitrary Orientation}
 Let's consider the problem of outputting an arbitrary orientation of the edges. We can encode it as follows:
@@ -995,6 +1108,10 @@ That is, we just swapped the node and the edge constraints.
 Observe that, if each edge outputs $\I \s \O$, then all nodes are going to get a configuration from $\I\O^3$, and hence they are going to be happy no matter what they get. Hence, this problem can be solved in $0$ rounds. 
 
 This highlights the fact that which part is active matters for $0$ round solvability.
+
+\paragraph{Exercise.}
+Check both problems on \href{\retor}{Round Eliminator}. Solutions \href{\retor#zVTNjpswEH6Vas5UWrI3HqDSHqo8wCpF3jDQUcG2jMkmi3j3jg1ebILS9lblEJjvm5lv/hjhAsUhgwqKEcTZ0gWhgJfjj2fIQIu+Xwxfjvze26GuoXgdwd60M2s0tTIdVgxWwgoXZIFIkiXRwjRlK92otxa7iBwyjtCSxN7H1sLY+amZ/Ub4LuQNiucpg8aoQTP4lOWniX8ZUF924kodfbCMohZtjxwfG4Pe9ZsTgs55igr6q3x5nO/k6nhA+Ec5h0hO2aD8XyR1QmuSTdmKN2xLi1fLgbjb8AKn7DXP4Ain05am2so/sGQ5tO0KB6D8AzznmUFr6MKLU/boW8DJzqpVxvEXE1fOUpyMikRjRFeSrMjgedHq4WyX4FKGRAFbXdmXY3tvF58fXAzOjdIKS0qWDY9LhgAxkKq+xzc1zISarlqRtOUi5c7OB3PGajBYvivzK+ofv6SmCjvqqSbBBxZsPPcg653sT26CHrZtJnvbAXlAyQaM8OQ+Any4Of8fYYope9N/MPn9qQeaP2yWLmvl0u61cF2MGJVD5wkMfc1T6AON2nfiDjnw8yg2mFQygTlH0Hnw7U3Q2MGaYeYHTcxPZWyq8c3l25qvFU2D8ySX2N6yOjMnHfjnUcdGx6z1/RIt5ASqFDr51nPWtPGiJbZ9visxWafQuGUKe9iDRZwm/oBNvwE=}{here} and \href{\retor#7VTbjpswEP2Vap6pFJI3PqDSPlT5gIgibxjYUcFGxmSTRfz7jjEQTGi2+9ZVo0gE5szleGZ8WjhBtA0ghagFcTR0Qojg6dseAqhEXQ/f+187NtSmyTKIDi2YS2XtFepM6RJTBlNhhE0yQCTJkCig64Kru1bPBZYz57FiCwVJrPvcldDGveUuroWfQl4gCrsAcq2aisFNbPPecQjjjn8BUJ2U4kwlvTHLKBNFjVwec4194A/Lk9+2zPN64L+is5vTCT5Zbzerl+QoIZJNUQRQiqoimSeFeMYiMXg2nJ3TwxPEwSEMYA9xvHRTRdq/1MssI5B8ALs6DjSaTjy4pEYzBRxVobSNmBtTErkWZUIyJY3HgeiGadpuWLKb/hlawktnW3uZ6JqGM/RJOPJgo7k4SiMMKZnk3LGpXXNgjfgcXz1ERudKkTTJQOLGzjt7xLTRmLwq/XvWQv7wTSmWVFNGgnd8tPE2jLReybzw8atm2WkylxWQZ+QtQQsbexH57oT8v4du7rK2AHeGvz740c2Njy9wpmzZtRa6Dh4Wk5FN2Tsw9D30oTfUaj2IO2TB6aosMKmkB3ONkee2b6+HrgfMSflEbs9jry/qHN0QjW44RW8YXFgKwbn5454u+txoE2bV7QoNzh6UKrTkTe8zuXhr5tnW/e3xvGUauzDMYA27s4adp95/FvtR8f5ztXfr8nXF/uBE96H3D73/x/Xe3bRPyf2g3A/J/1Dy4657Bw==}{here}.
+Try the following: start from the first problem and compute $\re(\Pi)$ by pressing \retorcommand{Speedup}. What do you notice? Up to renaming, the obtained problem is equal to the second discussed problem. See it \href{\retor#7VdNj5swEP0r1ZyptNm95bY5VMqhyg+IUuQNA7UKNjJmvyL+e8c2LDaQZLNabdstyiHg9+bDY888cYB7WF5HkMDyAGyv+T3CEtabHzcQQcmqql34sqH3StdpCsvtAfRTaZZLVKlUBSYEJkwz46SFuOCasxyaJurpSt7lWHjkLuIBci6wsr5LprR7ypzdAb4z8QTLmyaCTMm6JPAqWuwa+kXAq7hgj7zgz5TGMmV5heQfM4XW9JtJBI1x423oVfEWfryd2ccJwoXpXHvpxBmKvyWlgpUlF1mcszvMY42PmhxRtWENu2i7iGADu92QJvPEPlDKos7zHu6A+Azs4jhQK35PFyeu0JaAgu1lLpXht0u0c0rFpJFwlilWxFwkXOG+zdXC0STBhOwCdVhvSrbk21ob//RgfFBsFJppLkWc0XGJzoEPhFmP8cEeHCHlj6XkQsdtKqN1apg9JrXC+EGqX1796CVcSrDgFU85owbr1ujcu7QeuP5JRSjrYZm5fpoA6YCCG3CAKzMEqHEX9L+BxqdMnf6Jk58+9Y5mG5tSF6k0YadK2F8MHxV1YQkEfV2E0DMqOW1EFTLgS1MMMCFFAFOMLs9rW94A9Q20qh2/y4n4YRqD3djiUm+5bkWVoTvJ1rdd6Y2JEx74S1P7i4aZluNL1JIDKJFo0teW04f1L1qwNs03WwyuU1e49hSmsBMXsQnE47jWVCXSLsr31JqPmv0fLX1Oa8IxPJr1t+2sX52e9eN5+cbBPyEwU/N0coYelwA7ScjjWTk4ohkDXYhmRRgpwm2rCKujimB5RrANzzTKpfIwIT2fTCt6Az+pk2oxkgmnN75KwO0KZqUYKoVCwQqcheKdhOKVHwWzUMyfDuc+HWah+FNCsd7MQjESim5c/udS4a7LZ1SKrRvUs1jMYvHvi4Vr04u0oh37s16c1Ytd0/wG}{here}. It makes sense: we have a problem that we would like to solve in $0$ rounds using a node algorithm, but we cannot, because nodes need to agree on an edge orientation. This is clearly solvable with $1$ round of communication. However, we actually need ``half'' round: it would be sufficient if each ``edge'' were a computing entity that could send the messages ``$\I$'' and ``$\O$'' to its endpoints.
 
 \subsection{Diagram}
 
