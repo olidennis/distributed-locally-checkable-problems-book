@@ -947,8 +947,57 @@ In a very simplified way, the act of finding lower bounds via round elimination 
 Is there a way to detect if a relaxation is good, or do we have to try all possible relaxations by brute force? We will discuss this later. We will now discuss some useful ingredients.
 
 \subsection{Zero-round Solvability}
+A zero-round algorithm is just a mapping from a node's initial knowledge to a configuration. In the LOCAL model, the initial knowledge of a node includes its own ID, which means that different nodes may output different configurations. However, as discussed, when using round elimination, we first prove a lower bound in the deterministic port numbering model, and then we lift it to the LOCAL model via some lifting theorems. This helps a lot in determining when a problem can be solved in zero rounds: in the deterministic port numbering model, the initial knowledge of the nodes is the same. Hence, all nodes must output the same configuration, in the same way (i.e., all nodes are going to output the same label on, e.g., their first port).
+Note that the white nodes do not know the port numbering that the black nodes have towards them. Hence, if white nodes output a configuration $C_W$, we can force, on a black node, an arbitrary configuration $C_B$ that uses the labels appearing in $C_W$.
+This gives a simple way to detect whether a problem in the black-white formalism can be solved in $0$ rounds. 
+\begin{framed}
+    A problem can be solved in zero rounds if and only if there exists a white configuration $\ell_1 \s \ldots \s \ell_\Delta$ satisfying that, each sub-multiset $C$ of size $\delta$ of $\{\ell_1,\ldots,\ell_\Delta\}$ is a valid black configuration.
+\end{framed}
+\subsubsection{Example: Bipartite Sinkless Orientation}
+Recall that BSO is the following problem:
+\begin{flalign*}
+& \A \s \A\B^2 &\\
+\\
+& \B \s \A\B^2 &
+\end{flalign*}
+Let us see why this problem cannot be solved in $0$ rounds.
+All white nodes must output the same configuration, which is any configuration that can be picked from the condensed configuration $ \A \s \A\B^2$. Any such choice must contain the label $\A$ at least once. This means that we can force $3$ white nodes to output label $\A$ towards the same black node. This black node is going to have the configuration $\A^3$, which is not allowed by the black constraint.
+
+\subsubsection{Example: Bipartite Maximal Matching}
+Recall that we encode BMM as follows:
+\begin{flalign*}
+& \M \s \O^2 &\\
+& \P^3 &\\
+\\
+& \M \s \O\P^2 &\\
+& \O^3 &
+\end{flalign*}
+Here we have two cases to consider, either all white nodes output $\M \s \O^2$, or they all output $\P^3$. In the former case, we can force a black node to ``receive'' two $\M$s, which is not allowed. In the latter case, we can force the configuration $\P^3$ on a black node, which is not allowed. Hence, BMM is not solvable in $0$ rounds.
+
+\subsubsection{Example: Arbitrary Orientation}
+Let's consider the problem of outputting an arbitrary orientation of the edges. We can encode it as follows:
+\begin{flalign*}
+& \I\O^3 &\\
+\\
+& \I \s \O &
+\end{flalign*}
+That is, each edge must be properly oriented (if it is labeled $\I$ by one endpoint then it must be labeled $\O$ by the other endpoint, and vice versa), but on a node everything is allowed ($3$ incoming, $3$ outgoing, $1$ incoming and $2$ outgoing, $2$ incoming and $1$ outgoing).
+Note that, while this looks like a trivial problem, it is actually not: it cannot be solved in $0$ rounds by the nodes.
+In fact, pick an arbitrary configuration from $\I\O^3$. It contains either an $\I$ or an $\O$, w.l.o.g. assume it is an $\I$. Then we can force an edge to get the configuration $\I^2$, which is not allowed.
+
+However, now consider the same problem, but consider an edge-centric algorithm, i.e., consider the following problem:
+\begin{flalign*}
+& \I \s \O &\\
+\\
+& \I\O^3 &
+\end{flalign*}
+That is, we just swapped the node and the edge constraints.
+Observe that, if each edge outputs $\I \s \O$, then all nodes are going to get a configuration from $\I\O^3$, and hence they are going to be happy no matter what they get. Hence, this problem can be solved in $0$ rounds. 
+
+This highlights the fact that which part is active matters for $0$ round solvability.
 
 \subsection{Diagram}
+
 
 
 [TODO: 0 round solvability]
