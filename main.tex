@@ -1223,7 +1223,7 @@ Note that we could have written BMM as follows (we just replaced the condensed c
 Observe that the partial diagram given by Round Eliminator now does not contain any edge, but by maximizing we still get the correct diagram (and the same passive constraint as before). See it \href{\retor#7VbBbuIwEP2Vas5eiYRbPmBvCO5sGrnEyVqb2JHjUCjKv+/YIWAHl6qLaKUVFxzmPT/PjCczOcAWkphADskB6EbzLYMEFk/L5/iXWD3PgUBD29Yz4/K0MsvK/FtaUqu7ooBkfQC9bwy3YaqQqmY5gjnV1OgfIS645rSCvidnupIvFasd8ujMASouWGu1G6r08FQO+w6woGIPSdQTKJXsGgRnqdGdEGKHEKW9pbyrNnfIsSGnBHib1XTHa/6GISUFrVqGvrJSMbvxpwmKma29k7Fv8P1DtchXu06Ibz4u/ozafBrpvyU+K5l4JP+rk1/TpuGizCr6wqpMs51GoTX2lhWkZB0RWJp1RmABaTqlyyq3D+iZ6KrqDI9A9gE8nDeAWvEtNpisZfq0YSMrqcwO15hzWipaZ1zkXLGNdXhGZtbdCH9jEhtXpzRz6lTiLIAKeBtWA/NoVTD55sFooRNMaKq5FFmJtSpGIRcIBeDiwWAKvmskFzo7unRhxx67YXmnWPYq1R8nlfjHN+Ws5i0vOMWePNqwFEa3Xrn+jcloumnGud4HQLwrrygOMDPDBHt9hOsS1xjXFfQuNVQQV4ohXAgjDa8gMteKo6eQxoFQModcrid3JLraEhD6EfnQG1MyvAlzZcDTGzPBhBQejGeMns5toj00vMF1ynfkMh7zFjNVsuE6jxrW4nH8Wz+97K7RMIvmspKOZA/KJTOea8s5H+tWm2cL801sXk2NKTheQAi7Uo2999Hx/jfK2PUeHykB30l0/0npqZFwgFp1d/sW+OoY4/9o4rpd6JPz9g5T16o+Ru9j9N42eodm85i8N0zetO//Ag==}{here}.
 Please note that, for problems with passive degree $2$, Round Eliminator always computes the full diagram (because it is cheap enough).
 
-\section{Fast Universal Quantifier}
+\section{Fast Universal Quantifier}\label{sec:fastre}
 We now see an efficient way to compute the active constraint of $\re(\Pi)$ given $\Pi = (\Sigma,W,B)$.
 The trivial way is to just apply the definition: we go through all configurations in $(2^\Sigma)^\delta$ and we check which ones satisfy that all choices result in configurations of $B$.
 There is a much better way, that one can prove to be equivalent:
@@ -1253,11 +1253,43 @@ In other words, it never makes sense to take the union between comparable sets: 
 Let us see how powerful this observation is. Recall that the passive side of $\re(\Pi)$ contains only the condensed configuration $C = \B \s \A\B^2$. Let us compute the active side of $\re(\re(\Pi))$. We can see that all the labels of $C$ are comparable to each other, so by \Cref{obs:comparable} we cannot obtain anything useful by combining $C$ with itself. Since $C$ is the only configuration present, this means that we are already done.
 
 \section{A Lower Bound for Bipartite Maximal Matching}
-We now have all ingredients to prove a lower bound for BMM. Round Elimination, when first introduced, was used to prove lower bounds for weak coloring on odd-degree graphs, and then, not much later, it was used to prove lower bounds for BMM. Finding a lower bound for BMM was a big open problem at that time. 
+We now have all ingredients to prove a lower bound for BMM.
+Let us first give some context. 
+Round Elimination was first used for proving lower bounds for $3$-coloring cycles in the '80s, then it was used for proving a lower bound for SO in 2015. However, the current form of round elimination, that is, the generic way to compute $\re(\Pi)$ given $\Pi$, was introduced in 2019, and was used to prove a lower bound of $\Omega(\log^\star \Delta)$ (for $\Delta$ small enough) for the problem of computing a weak $2$-coloring on odd-degree $\Delta$-regular graphs.
 
-Thanks to what we know nowadays, proving a lower bound for BMM via Round Elimination is now an easy task (at least compared to lower bounds that came later). In fact, BMM behaves \emph{particularly well} under round elimination, and not many known problems behave that well. In fact, similar problems behave much worse, such as MIS, $(\Delta+1)$-coloring, or even MM (when encoded in non-$2$-colored graphs). It is curious to obseve, after the fact, that the problems on which people decided to try Round Elimination first, happened to be the exact problem on which Round Elimination behaves nice (BMM and SO/EG).
+The first application of Round Elimination for solving a big open problem came a bit later, when it was used to prove a lower bound for BMM. Finding a lower bound for maximal matching was a big open question at that time: for algorithms in the regime $f(\Delta) + O(\log^* n)$, we knew that $f(\Delta) \in O(\Delta)$ and that $f(\Delta) \in \Omega(\log \Delta / \log \log \Delta)$. However, the lower bound was for a potentially much easier problem (vertex cover approximation). With round elimination, it became possible to prove that $f(\Delta) \in \Omega(\Delta)$, and hence solving this big open question.
 
-So in this section we will see a lower bound for BMM. We will not see the original proof, but we will use the knowledge that we got over the years to get a simpler proof.
+At that time, we did not know much about Round Elimination, for example we were lacking heuristics that we could use to identify good or bad relaxations, we were lacking the mentioned lifting theorems, we were lacking the procedure described in \Cref{sec:fastre} to quickly compute the next problem. Moreover, Round Eliminator was developed \emph{while} trying to prove a lower bound for maximal matching, and it was terribly slow. In fact, the first paper that proved a lower bound for maximal matching did not manage to directly prove an $\Omega(\Delta)$ lower bound for MM via round elimination, but it only managed to prove an  $\Omega(\sqrt{\Delta})$ lower bound for it. Fortunately, such lower bound applied also to some (more relaxed) variant of maximal matching, and thanks to additional reductions such lower bound could be lifted to an  $\Omega(\Delta)$ lower bound for MM.
+
+Interestingly, the lower bound was proved for BMM, not just MM, which makes the lower bound even stronger. What we still did not realize at that time is that we were terribly lucky: 
+\begin{framed}
+    SO and BMM behave nicely under Round Elimination, any other problem behaves way worse. This includes MIS and MM!
+\end{framed}
+Note that this is very counterintuitive: it should be easier to prove lower bounds for harder problems (MIS and MM algorithms can be used to solve BMM, SSO can be used to solve SO). However, in Round Elimination, more often than not, easier problems tend to behave better (the number of labels stays smaller).
+
+In fact, a good way for tackling a problem seems to be to try to answer the following question:
+\begin{framed}
+    How can we maximally relax a problem, such that it still has the same complexity as the original one?
+\end{framed}
+Such a problem often behaves much better under round elimination compared to the original one. Some examples:
+\begin{itemize}
+    \item In general, fixed point relaxations exactly encode this idea.\begin{itemize}
+        \item SSO grows linearly, SO is a relaxation of SSO and converges to a fixed point.
+        \item $3$-coloring $3$-regular graphs grows fully exponentially, and we prove a lower bound for it by finding a problem that is at least as easy and that does not grow at all, so a non-trivial fixed point relaxation.
+    \end{itemize}
+    \item BMM vs MM.
+    \begin{itemize}
+        \item We can see $\re(\Pi)$ as the answer of the following question: what are all the possible \emph{easiest inputs} that we could use to solve $\Pi$ in one round? So the more ``uncomparable ways'' to solve $\Pi$ there are, the larger $\re(\Pi)$ is.
+        \item It seems that there is only one meaningful way to solve BMM on $2$-colored graphs, the proposal algorithm, which requires $O(\Delta)$ rounds and no dependency on $n$.
+        \item MM is different, it requires $\Omega(\log^\star n)$ rounds. In order to solve it, we first need to compute a coloring and then do something. This is somehow encoded in the problems that $\re$ gives us. In the case of BMM, the ``computing a coloring'' part ``somehow vanishes'' from the result of $\re$, because a $2$-coloring is given already.
+    \end{itemize}
+\end{itemize}
+
+So we have been lucky that people decided to study exactly those problems that behave nicely under Round Elimination. After that, we improved our intuition, we better developed our techniques, and we managed to find a way to handle problems that do not behave as nice.
+
+
+
+So in this section we will see a lower bound for BMM. We will not see the original proof, but a simpler one, based on the knowledge that we got over the years.
 
 
 \chapter{Other Lower Bound Techniques}
