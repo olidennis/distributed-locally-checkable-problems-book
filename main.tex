@@ -1503,6 +1503,18 @@ However, we pay something here. By using the original sequence, we may have been
 \subsection{Proving it}
 We will now prove that $\re(\Pi_i)$ can be mapped, in $0$ rounds, to $\Pi_{i+1}$. We will prove it for $i\ge 1$ (the case $i=0$ seemed to be a bit special, so we ignore it because anyways asymptotically it does not matter). Also, for $i$ too large, the statement cannot be true: at some point the problems should become trivial, and at some point the problem is not even be well-defined, because some exponents would become negative. Moreover, we have already seen (for $\Delta=4,5,6$) that the last step was a bit special. So a guess could be that we can prove the statement up to $i = \Delta-2$ (or maybe $i=\Delta-1$).
 
+\subsubsection{Maximizing the Passive Constraint}
+The first step is to show that the active constraint of $\re(\Pi)$ (which is obtained by applying the universal quantifier on the passive constraint of $\Pi$) can be relaxed to the active constraint of $\Pi_{i+1}$. However, there are two ways for doing this. One can try to directly prove that, by applying the universal quantifier, we can make some sets larger (but never smaller) and obtain the active constraint of $\Pi_{i+1}$.
+
+The other way is to exactly characterize the active constraint of $\re(\Pi)$, and then showing that it can be mapped to $\Pi_{i+1}$. While this may seem to be more work, this can be done by using the ``fast forall'' procedure, while in the other way we cannot.
+
+Some intuition about when one or the other way is better is the following:
+\begin{itemize}
+    \item If the active constraint of $\re(\Pi)$ is much larger than the active constraint of $\Pi_{i+1}$, use the first method. (Using the second method would require to give an exact characterization of a big problem, which could be complicated.)
+    \item Otherwise, use the second method. (Giving a proof by just combining two lines at a time is easier.)
+\end{itemize}
+The existing proofs for BMM use the first method. Here, we will use the second method. Note that there could be a third method: we first show that the passive constraint of $\Pi_i$ (when each disjunction is seen as a set) can be relaxed to the active constraint of $\Pi_{i+1}$, and then we show that, by combining the configurations of the active constraint of  $\Pi_{i+1}$, we do not get any new configuration. This would work. However, for our problems, such a statement is false.
+
 \chapter{Other Lower Bound Techniques}
 [TODO: Marks, KMW, indistinguishability, ...]
 
