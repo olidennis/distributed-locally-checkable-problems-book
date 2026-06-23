@@ -1469,8 +1469,39 @@ Also, for the values that we tried, we got sequences of length $2\Delta-1$.
 So now we have a solid guess of what the lower bound should be, and how the sequence of problems should look like. It is now time to get a real proof.
 
 \subsection{Formalizing our guess}
+It seems that the problems that we got (at least after few initial steps), can be described as follows, for some integers $a$ and $b$:
+\begin{flalign*}
+& \M \s \O^{\Delta-1} &\\
+& \Y \s \O^{\Delta-2} \s \X &\\
+& \P^{\Delta-1-a}\s \O^{a} \s \X&\\
+\\
+& \M\X \s \P\O\X^{\Delta-1} &\\
+& \X \s \P\O\X^{\Delta-2} \s \Y\M\P\O\X &\\
+& \O\X^{\Delta-1-b} \s \P\O\X^{b} \s \Y\M\P\O\X &
+\end{flalign*}
+In particular, at some point we got the problem for $a=1$ and $b=0$. Then we did \retorcommand{Speedup} and merged $\langle \M,\O\rangle$ with $\Y$ and got the same problem, but for $a=b=1$.
+Then we did the same operations, and we got the same problem, but for $a=2$ and $b=1$. Then $a=b=2$. It seems that, at each step, we increment $a$ if $a=b$, and we increment $b$ otherwise.
+So we now have formalized our guess. We have two ways to proceed:
+\begin{itemize}
+    \item We can try to prove our guess. 
+    \item We can try to simplify the sequence a bit to make the proof easier.
+\end{itemize}
+In more detail, we now have a sequence that behaves slightly differently if our current step is even or odd. Proving that this sequence is correct may require a clever proof, or two separate proofs. We follow a different strategy: let us define the sequence of problems that we get when $a=b$ (and call it $i$), so we are essentially ignoring one problem every two:
+\begin{flalign*}
+& \M \s \O^{\Delta-1} &\\
+& \Y \s \O^{\Delta-2} \s \X &\\
+& \P^{\Delta-1-i}\s \O^{i} \s \X&\\
+\\
+& \M\X \s \P\O\X^{\Delta-1} &\\
+& \X \s \P\O\X^{\Delta-2} \s \Y\M\P\O\X &\\
+& \O\X^{\Delta-1-i} \s \P\O\X^{i} \s \Y\M\P\O\X &
+\end{flalign*}
+Let $\Pi_i$ be the problem with parameter $i$.
+If our original guess was correct, this means that it should hold that $\re(\re(\Pi_i))$ can be relaxed to $\Pi_{i+1}$. But this also means that it should be possible to directly relax $\re(\Pi)$ to $\Pi_{i+1}$. So now we have a simpler statement to prove, that there is a $0$ round mapping from $\re(\Pi)$ to $\Pi_{i+1}$. This is potentially easier than the original task, which required to handle two parameters, $a$ and $b$.
+However, we pay something here. By using the original sequence, we may have been able to prove a lower bound of $2\Delta-1$. Now, since we skip a problem every $2$, we cannot hope to get a lower bound that is better than $\Delta-1$. Asymptotically, it does not matter, we would still be able to get an $\Omega(\Delta)$ lower bound.
 
-
+\subsection{Proving it}
+We will now prove that $\re(\Pi_i)$ can be mapped, in $0$ rounds, to $\Pi_{i+1}$. We will prove it for $i\ge 1$ (the case $i=0$ seemed to be a bit special, so we ignore it because anyways asymptotically it does not matter). Also, for $i$ too large, the statement cannot be true: at some point the problems should become trivial, and at some point the problem is not even be well-defined, because some exponents would become negative. Moreover, we have already seen (for $\Delta=4,5,6$) that the last step was a bit special. So a guess could be that we can prove the statement up to $i = \Delta-2$ (or maybe $i=\Delta-1$).
 
 \chapter{Other Lower Bound Techniques}
 [TODO: Marks, KMW, indistinguishability, ...]
