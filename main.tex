@@ -1199,7 +1199,7 @@ The maximized version of the passive constraint of MIS hence is the following:
 This form \emph{guarantees} that $\ell \le \ell'$ if and only if each time $\ell$ appears in a disjunction, $\ell'$ also appears in the same disjunction, which is much easier to check.
 Note that, once a passive constraint of a problem $\Pi$ is maximized, computing $\re(\Pi)$ becomes trivial (we essentially already have the new active constraint, and we have seen that the new passive constraint is easy to compute).
 
-\subsubsection{Partial Diagram}
+\subsubsection{Partial Diagram}\label{sec:partial-diagram}
 While the diagram of a problem may be hard to compute, there is an easy way to compute a good approximation of it (and in particular a subset of its relations), which often turns out to be equal to the real diagram.
 Suppose we computed $\Pi' = \re(\Pi)$, and now we want to compute the diagram of $\Pi'$. Recall that each label of $\Pi'$ is a set of labels of $\Pi$. 
 \begin{framed}
@@ -1700,6 +1700,59 @@ Most of the proofs based on round elimination follow this structure. Some are sl
 However, the case of BMM was easier than usual. It is typically the case that we need to argue about the diagrams of the problems that we get.
 We will see more complex examples later.
 
+\subsection{Alternative Proof}
+We now see how we could prove the same result, without using the fast universal quantifier procedure.
+
+Applying the universal quantifier in the standarad way requires a lot of case analysis. In order to reduce the number of cases to consider, we first reduce the number of possible sets that can appear in the active constraint of $\re(\Pi_{\Delta,i})$. For this purpose, we use the following known fact:
+\begin{framed}
+    The sets appearing in the active constraint of $\re(\Pi_{\Delta,i})$ must be \emph{right-closed subsets}.
+\end{framed}
+Right-closed subsets means that, if we look at the diagram of $\Pi_{\Delta,i}$, if a label is in the set, then all its successors are also in the set. So the first in this alternative way of proving the result is determining the diagram of $\Pi_{\Delta,i}$.
+
+By using the partial diagram characterization discussed in \Cref{sec:partial-diagram}, we see that the following holds.
+\begin{lemma}
+  Let $\Delta \ge 3$ and $1 \le i \le \Delta-3$. The diagram of $\Pi_{i,\Delta}$ contains at least the following relations:
+  \begin{center}
+    \includegraphics[width=0.4\textwidth]{figs/bmm diagram.pdf}
+  \end{center}
+\end{lemma}
+This implies that the only sets that can appear in the active constraint of $\re(\Pi_{\Delta,i})$ are: $\{\Y,\M,\P,\O,\X\}, \{\M,\P,\O,\X\}, \{\M,\O,\X\}, \{\P,\O,\X\},\{\M,\X\},
+\{\O,\X\}, \{\X\}$. Possibly less sets could appear, for two reasons:
+\begin{itemize}
+    \item There could be additional relations between labels, that we are missing because we only computed a partial diagram.
+    \item It may just happen that, when applying the universal quantifier, some set is not obtained.
+\end{itemize}
+
+We want to prove that, by applying the universal quantifier on the following constraint $C$:
+\begin{flalign*}
+& \M\X \s \P\O\X^{\Delta-1} &\\
+& \X \s \P\O\X^{\Delta-2} \s \Y\M\P\O\X &\\
+& \O\X^{\Delta-1-i} \s \P\O\X^{i} \s \Y\M\P\O\X &
+\end{flalign*}
+we can relax the result to the following constraint $C'$:
+\begin{flalign*}
+& \M\X \s \P\O\X^{\Delta-1} &\\
+& \X \s \P\O\X^{\Delta-2} \s \Y\M\P\O\X &\\
+& \O\X^{\Delta-2-i} \s \P\O\X^{i+1} \s \Y\M\P\O\X &
+\end{flalign*}
+If we prove this, then the rest of the proof would be the same as the one we have seen already (we would rename and continue in the exact same way).
+
+Let us start by gathering some properties that must be necessarily satisfied by any configuration composed of the $7$ sets that we have listed before.
+\begin{itemize}
+    \item $\{\Y,\M,\P,\O,\X\}, \{\M,\P,\O,\X\}, \{\M,\O,\X\},\{\M,\X\}$ can appear at most once in total, since otherwise we could pick $2$ $\M$s, but no configuration of $C$ contains $2$ $\M$s. Hence, each configuration of $C'$ must contain at least $\Delta-1$ sets from $\{\P,\O,\X\}, \{\O,\X\}, \{\X\}$.
+    \item If $\{\X\}$ is present, we get that any configuration is dominated by $\{\X\} \s \{\Y,\M,\P,\O,\X\} \s \{\P,\O,\X\}^{\Delta-2}$, which is present in $C'$. So in the following assume $\{\X\}$ is not present.
+    \item If $\{\M,\X\}$ is present, then any configuration satisfying the universal quantifier is dominated by $\{\M,\X\} \s \{\P,\O,\X\}^{\Delta-1}$, which is present in $C'$. So in the following assume $\{\M,\X\}$ is not present.
+    \item We get that each set contains $\O$. This implies that at most $i+1$ sets contain $\P$, since otherwise we could pick the configuration $\P^{i+2} \s \O^{\Delta-i-2}$, which is not present in $C$. Summarizing, at most one set contains $\M$, all sets contain $\O$, at most $i+1$ sets contain $\P$. Observe that any such configuration is dominated by $\{\Y,\M,\P,\O,\X\} \s \{\P,\O,\X\}^{i+1} \s \{\O,\X\}^{\Delta-i-2}$, which is contained in $C'$.
+\end{itemize}
+Let us compare the two approaches:
+\begin{itemize}
+    \item This approach is shorter. This is not always the case, it really depends on the problem. The paper introducing the ``fast universal quantifier'' method showed that proving that the fixed point of $\Delta$-coloring is indeed a fixed point requires a much shorter proof with the other method.
+    \item This approach requires to carefully figuring out a strategy, while the other approach is more ``auto-pilot''. 
+    \begin{itemize}
+    \item Here, we had to decide to first upper bound the number of $\M$s, then to exclude $\{\X\}$ and $\{\M,\X\}$, then upper bounding the $\P$, and then concluding the proof. Finding such a strategy may be non-trivial.
+    \item The other approach just required to mechanically combine two configurations at a time. However, there we could not just show that by combining configurations of $C$ we obtain configurations of $C'$. We had to do more. First, we maximized $C$ with a simple proof. Then, we showed that we could relax the maximized version of $C$ to $C'$.
+    \end{itemize}
+\end{itemize}
 \chapter{Other Lower Bound Techniques}
 [TODO: Marks, KMW, indistinguishability, ...]
 
