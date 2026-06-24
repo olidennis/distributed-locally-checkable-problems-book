@@ -7,6 +7,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsfonts}
+\usepackage{amsthm}
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
@@ -62,6 +63,7 @@
 
 
 \newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
 \newtheorem{observation}{Observation}
 
 \newcounter{open}
@@ -1506,7 +1508,7 @@ We will now prove that $\re(\Pi_i)$ can be mapped, in $0$ rounds, to $\Pi_{i+1}$
 \subsubsection{Maximizing the Passive Constraint}
 The first step is to show that the active constraint of $\re(\Pi)$ (which is obtained by applying the universal quantifier on the passive constraint of $\Pi$) can be relaxed to the active constraint of $\Pi_{i+1}$. However, there are two ways for doing this. One can try to directly prove that, by applying the universal quantifier, we can make some sets larger (but never smaller) and obtain the active constraint of $\Pi_{i+1}$.
 
-The other way is to exactly characterize the active constraint of $\re(\Pi)$, and then showing that it can be mapped to $\Pi_{i+1}$. While this may seem to be more work, this can be done by using the ``fast forall'' procedure, while in the other way we cannot.
+The other way is to exactly characterize the active constraint of $\re(\Pi)$, and then showing that it can be mapped to $\Pi_{i+1}$. While this may seem to be more work, this can be done by using the ``fast universal quantifier'' procedure, while in the other way we cannot.
 
 Some intuition about when one or the other way is better is the following:
 \begin{itemize}
@@ -1514,6 +1516,73 @@ Some intuition about when one or the other way is better is the following:
     \item Otherwise, use the second method. (Giving a proof by just combining two lines at a time is easier.)
 \end{itemize}
 The existing proofs for BMM use the first method. Here, we will use the second method. Note that there could be a third method: we first show that the passive constraint of $\Pi_i$ (when each disjunction is seen as a set) can be relaxed to the active constraint of $\Pi_{i+1}$, and then we show that, by combining the configurations of the active constraint of  $\Pi_{i+1}$, we do not get any new configuration. This would work. However, for our problems, such a statement is false.
+
+We could start from the passive constraint of $\Pi_i$ and exactly by running the fast universal quantifier procedure, but we do not have to, there is a shortcut that we can take.
+We only care about proving a lower bound, we do not care about characterizing the exact result of $\re$. So we can start from the passive constraint of $\Pi_i$, \emph{add} some arbitrary condensed configurations, and then prove that, by running the procedure, we do not get any new configuration. 
+In order to understand what configurations we should add, we go back to Round Eliminator, we put our problem, we press \retorcommand{Maximize}, and we guess what result we should get for all $\Delta$ and $i$.
+
+So we put $\Pi_2$ on Round Eliminator and we press \retorcommand{Maximize}. We see that the passive constraint becomes the following:
+\begin{flalign*}
+& \M\X \s \P\O\X^{9} &\\
+& \X \s \P\O\X^{8} \s \Y\M\P\O\X &\\
+& \O\X^{7} \s \P\O\X^{2} \s \Y\M\P\O\X &\\
+& \O\X^{6} \s \P\O\X^{3} \s \M\O\X &
+\end{flalign*}
+Let us try the same for $\Pi_3$. We get the following:
+\begin{flalign*}
+& \M\X \s \P\O\X^{9} &\\
+& \X \s \P\O\X^{8} \s \Y\M\P\O\X &\\
+& \O\X^{6} \s \P\O\X^{3} \s \Y\M\P\O\X &\\
+& \O\X^{5} \s \P\O\X^{4} \s \M\O\X &
+\end{flalign*}
+The pattern seems to be clear: we get one additional configuration, and it seems to be $\O\X^{\Delta-2-i} \s \P\O\X^{i+1} \s \M\O\X$.
+
+We are now ready to prove the following lemma.
+\begin{lemma}
+Let $\Delta \ge 3$ and $1 \le i \le \Delta-3$.
+The following constraint is maximized:
+\begin{flalign*}
+& \M\X \s \P\O\X^{\Delta-1} &\\
+& \X \s \P\O\X^{\Delta-2} \s \Y\M\P\O\X &\\
+& \O\X^{\Delta-1-i} \s \P\O\X^{i} \s \Y\M\P\O\X &\\
+& \O\X^{\Delta-2-i} \s \P\O\X^{i+1} \s \M\O\X &
+\end{flalign*}
+\end{lemma}
+\begin{proof}
+    We just need to show that, by combining two arbitrary configurations for an arbitrary $\sigma$ and $u$, we obtain a configuration dominated by an existing one. In the premise of the lemma, we required $\Delta \ge 3$ and $1 \le i \le \Delta-3$ just to have all exponents to be positive, which could simplify the proof.
+
+    We have $4$ condensed configurations that we could combine with each other, so we have $10$ cases to consider:
+    \begin{itemize}
+        \item 1 with 1. So we want to combine $\M\X \s \P\O\X^{\Delta-1}$ with itself. We can observe that there is only $1$ matching that it makes sense to consider. If we were to match $\M\X$ with $\M\X$ and each $\P\O\X$ with a $\P\O\X$, we would end up taking the union between a set and itself, which by \Cref{obs:comparable} is useless. So there is only one case that it makes sense to consider, which is the configuration $(\{\M,\X\} \cup \{\P,\O,\X\}) \s  (\{\P,\O,\X\} \cap \{\M,\X\}) \s (\{\P,\O,\X\} \cap \{\P,\O,\X\})^{\Delta-2} = \M\P\O\X \s \X \s \P\O\X^{\Delta-2}$, which is dominated by configuration $2$.
+        \item 1 with 2. The only sets that are non-comparable are $\M\X$ and $\P\O\X$, so that is where we need to take the union. So the result is $(\{\M,\X\} \cup \{\P,\O,\X\}) \s  (\{\P,\O,\X\} \cap \{\X\}) \s (\{\P,\O,\X\} \cap \{\Y,\M,\P,\O,\X\}) \s (\{\P,\O,\X\} \cap \{\P,\O,\X\})^{\Delta-3} = \M\P\O\X \s \X \s \P\O\X^{\Delta-2}$, again dominated by configuration $2$.
+        \item 1 with 3. There are two unions to consider.
+        \begin{itemize}
+            \item $\M\X$ with $\O\X$. The result is $\M\O\X \s \O\X^{\Delta-2-i} \s \P\O\X^{i+1}$, which is configuration $4$.
+            \item $\M\X$ with $\P\O\X$. The result is $\M\P\O\X \s \O\X^{\Delta-1-i} \s \P\O\X^{i}$, dominated by configuration $3$.
+        \end{itemize}
+        \item 1 with 4. There are three unions to consider.
+        \begin{itemize}
+            \item $\M\X$ with $\O\X$. The result is $\M\O\X \s \O\X^{\Delta-3-i} \s \P\O\X^{i+1} \s \O\X$, which is configuration $4$.
+            \item $\M\X$ with $\P\O\X$. The result is $\M\P\O\X \s \O\X^{\Delta-2-i} \s \P\O\X^i \s \O\X$, dominated by configuration $3$.
+            \item $\P\O\X$ with $\M\O\X$. In this case, there are two matchings that we need to consider.
+            \begin{itemize}
+                \item $\M\X$ with $\O\X$. The result is $\M\P\O\X \s \X \s \O\X^{\Delta-3-i} \s \P\O\X^{i+1}$, dominated by configuration $2$.
+                \item $\M\X$ with $\P\O\X$. The result is $\M\P\O\X \s \X \s \O\X^{\Delta-2-i} \s \P\O\X^i$, dominated by configuration $2$.
+            \end{itemize}
+        \end{itemize}
+        \item 2 with 2. We can see that all sets appearing in configuration $2$ are comparable with each other, so by \Cref{obs:comparable} any obtained configuration is dominated by configuration $2$.
+        \item 2 with 3. Again, all sets are comparable.
+        \item 2 with 4. Only one union to consider, $\P\O\X$ with $\M\O\X$. The union gives the set $\M\P\O\X$, and each intersection is going to be a subset of $\P\O\X$. Moreover, at least one intersection gives $\X$. Hence, the result is dominated by configuration $2$.
+        \item 3 with 3. All sets are comparable.
+        \item 3 with 4. Only one union to consider, $\P\O\X$ with $\M\O\X$. The union gives the set $\M\P\O\X$. Then, observe that, when taking intersections, we obtain at most $i$ $\P\O\X$ (one from $\Y\M\P\O\X$ and $i-1$ from the remaining $\P\O\X$), and all other intersections are $\O\X$. Hence, the result is dominated by configuration $3$.
+        \item 4 with 4. Only one union to consider, $\P\O\X$ with $\M\O\X$. The union gives the set $\M\P\O\X$. When taking the intersections, we need to match $\O\X^{\Delta-2-i} \s \P\O\X^{i+1}$ with $\O\X^{\Delta-2-i} \s \P\O\X^{i} \s \M\O\X$. Observe that we obtain at most $i$ $\P\O\X$, and all the other sets are $\O\X$. Hence, the result is dominated by configuration $3$.
+    \end{itemize}
+\end{proof}
+Observe that the proof is a simple and well-structure case analysis, that's what using the fast universal quantifier procedure gives us.
+The surprising fact is that the hard part of obtaining a lower bound for BMM is done. The rest are simple steps.
+
+
+
 
 \chapter{Other Lower Bound Techniques}
 [TODO: Marks, KMW, indistinguishability, ...]
