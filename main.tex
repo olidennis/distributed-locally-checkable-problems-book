@@ -582,7 +582,7 @@ We can now describe $\Pi'$ more compactly as follows:
     \item $W'$ is the set of configuration over $\Sigma'$ that satisfy the existential quantifier.
 \end{itemize}
 
-\section{An easy way to compute \texorpdfstring{$W'$}{W'}}
+\section{An easy way to compute \texorpdfstring{$W'$}{W'}}\label{sec:easy-new-passive}
 In order to compute $W'$, there is an easy way that one can follow, which is possible to prove equivalent. 
 Start from $W'$ to be the empty set. Do the following operation in all possible ways. For each configuration in $W$, replace each label $\ell$ with a label from $\Sigma'$ that contains $\ell$. Add the resulting configuration to $W'$.
 
@@ -1048,7 +1048,7 @@ This exercise shows why it took so much to get a non-trivial fixed point relaxat
 \end{itemize}
 However, ``merging \emph{or labels}'' is a strategy that works for many other problems. An example in which it fails is LOC.
 
-\subsection{Zero-round Solvability}
+\subsection{Zero-round Solvability}\label{sec:zero}
 A zero-round algorithm is just a mapping from a node's initial knowledge to a configuration. In the LOCAL model, the initial knowledge of a node includes its own ID, which means that different nodes may output different configurations. However, as discussed, when using round elimination, we first prove a lower bound in the deterministic port numbering model, and then we lift it to the LOCAL model via some lifting theorems. This helps a lot in determining when a problem can be solved in zero rounds: in the deterministic port numbering model, the initial knowledge of the nodes is the same. Hence, all nodes must output the same configuration, in the same way (i.e., all nodes are going to output the same label on, e.g., their first port).
 Note that the white nodes do not know the port numbering that the black nodes have towards them. Hence, if white nodes output a configuration $C_W$, we can force, on a black node, an arbitrary configuration $C_B$ that uses the labels appearing in $C_W$.
 This gives a simple way to detect whether a problem in the black-white formalism can be solved in $0$ rounds. 
@@ -1498,27 +1498,27 @@ In more detail, we now have a sequence that behaves slightly differently if our 
 & \X \s \P\O\X^{\Delta-2} \s \Y\M\P\O\X &\\
 & \O\X^{\Delta-1-i} \s \P\O\X^{i} \s \Y\M\P\O\X &
 \end{flalign*}
-Let $\Pi_i$ be the problem with parameter $i$.
-If our original guess was correct, this means that it should hold that $\re(\re(\Pi_i))$ can be relaxed to $\Pi_{i+1}$. But this also means that it should be possible to directly relax $\re(\Pi)$ to $\Pi_{i+1}$. So now we have a simpler statement to prove, that there is a $0$ round mapping from $\re(\Pi)$ to $\Pi_{i+1}$. This is potentially easier than the original task, which required to handle two parameters, $a$ and $b$.
+Let $\Pi_{\Delta,i}$ be the problem with parameter $i$.
+If our original guess was correct, this means that it should hold that $\re(\re(\Pi_{\Delta,i}))$ can be relaxed to $\Pi_{\Delta,i+1}$. But this also means that it should be possible to directly relax $\re(\Pi_{\Delta,i})$ to $\Pi_{\Delta,i+1}$. So now we have a simpler statement to prove, that there is a $0$ round mapping from $\re(\Pi_{\Delta,i})$ to $\Pi_{\Delta,i+1}$. This is potentially easier than the original task, which required to handle two parameters, $a$ and $b$.
 However, we pay something here. By using the original sequence, we may have been able to prove a lower bound of $2\Delta-1$. Now, since we skip a problem every $2$, we cannot hope to get a lower bound that is better than $\Delta-1$. Asymptotically, it does not matter, we would still be able to get an $\Omega(\Delta)$ lower bound.
 
 \subsection{Proving it}
-We will now prove that $\re(\Pi_i)$ can be mapped, in $0$ rounds, to $\Pi_{i+1}$. We will prove it for $i\ge 1$ (the case $i=0$ seemed to be a bit special, so we ignore it because anyways asymptotically it does not matter). Also, for $i$ too large, the statement cannot be true: at some point the problems should become trivial, and at some point the problem is not even be well-defined, because some exponents would become negative. Moreover, we have already seen (for $\Delta=4,5,6$) that the last step was a bit special. So a guess could be that we can prove the statement up to $i = \Delta-2$ (or maybe $i=\Delta-1$).
+We will now prove that $\re(\Pi_{\Delta,i})$ can be mapped, in $0$ rounds, to $\Pi_{\Delta,i+1}$. We will prove it for $i\ge 1$ (the case $i=0$ seemed to be a bit special, so we ignore it because anyways asymptotically it does not matter). Also, for $i$ too large, the statement cannot be true: at some point the problems should become trivial, and at some point the problem is not even be well-defined, because some exponents would become negative. Moreover, we have already seen (for $\Delta=4,5,6$) that the last step was a bit special. So a guess could be that we can prove the statement up to $i = \Delta-2$ (we will adjust our guess later).
 
 \subsubsection{Maximizing the Passive Constraint}
-The first step is to show that the active constraint of $\re(\Pi)$ (which is obtained by applying the universal quantifier on the passive constraint of $\Pi$) can be relaxed to the active constraint of $\Pi_{i+1}$. However, there are two ways for doing this. One can try to directly prove that, by applying the universal quantifier, we can make some sets larger (but never smaller) and obtain the active constraint of $\Pi_{i+1}$.
+The first step is to show that the active constraint of $\re(\Pi_{\Delta,i})$ (which is obtained by applying the universal quantifier on the passive constraint of $\Pi_{\Delta,i}$) can be relaxed to the active constraint of $\Pi_{\Delta,i+1}$. However, there are two ways for doing this. One can try to directly prove that, by applying the universal quantifier, we can make some sets larger (but never smaller) and obtain the active constraint of $\Pi_{\Delta,i+1}$.
 
-The other way is to exactly characterize the active constraint of $\re(\Pi)$, and then showing that it can be mapped to $\Pi_{i+1}$. While this may seem to be more work, this can be done by using the ``fast universal quantifier'' procedure, while in the other way we cannot.
+The other way is to exactly characterize the active constraint of $\re(\Pi)$, and then showing that it can be mapped to $\Pi_{\Delta,i+1}$. While this may seem to be more work, this can be done by using the ``fast universal quantifier'' procedure, while in the other way we cannot.
 
 Some intuition about when one or the other way is better is the following:
 \begin{itemize}
-    \item If the active constraint of $\re(\Pi)$ is much larger than the active constraint of $\Pi_{i+1}$, use the first method. (Using the second method would require to give an exact characterization of a big problem, which could be complicated.)
+    \item If the active constraint of $\re(\Pi_{\Delta,i})$ is much larger than the active constraint of $\Pi_{\Delta,i+1}$, use the first method. (Using the second method would require to give an exact characterization of a big problem, which could be complicated.)
     \item Otherwise, use the second method. (Giving a proof by just combining two lines at a time is easier.)
 \end{itemize}
-The existing proofs for BMM use the first method. Here, we will use the second method. Note that there could be a third method: we first show that the passive constraint of $\Pi_i$ (when each disjunction is seen as a set) can be relaxed to the active constraint of $\Pi_{i+1}$, and then we show that, by combining the configurations of the active constraint of  $\Pi_{i+1}$, we do not get any new configuration. This would work. However, for our problems, such a statement is false.
+The existing proofs for BMM use the first method. Here, we will use the second method. Note that there could be a third method: we first show that the passive constraint of $\Pi_{\Delta,i}$ (when each disjunction is seen as a set) can be relaxed to the active constraint of $\Pi_{\Delta,i+1}$, and then we show that, by combining the configurations of the active constraint of  $\Pi_{\Delta,i+1}$, we do not get any new configuration. This would work. However, for our problems, such a statement is false.
 
-We could start from the passive constraint of $\Pi_i$ and exactly by running the fast universal quantifier procedure, but we do not have to, there is a shortcut that we can take.
-We only care about proving a lower bound, we do not care about characterizing the exact result of $\re$. So we can start from the passive constraint of $\Pi_i$, \emph{add} some arbitrary condensed configurations, and then prove that, by running the procedure, we do not get any new configuration. 
+We could start from the passive constraint of $\Pi_{\Delta,i}$ and exactly by running the fast universal quantifier procedure, but we do not have to, there is a shortcut that we can take.
+We only care about proving a lower bound, we do not care about characterizing the exact result of $\re$. So we can start from the passive constraint of $\Pi_{\Delta,i}$, \emph{add} some arbitrary condensed configurations, and then prove that, by running the procedure, we do not get any new configuration. 
 In order to understand what configurations we should add, we go back to Round Eliminator, we put our problem, we press \retorcommand{Maximize}, and we guess what result we should get for all $\Delta$ and $i$.
 
 So we put $\Pi_2$ on Round Eliminator and we press \retorcommand{Maximize}. We see that the passive constraint becomes the following:
@@ -1538,7 +1538,7 @@ Let us try the same for $\Pi_3$. We get the following:
 The pattern seems to be clear: we get one additional configuration, and it seems to be $\O\X^{\Delta-2-i} \s \P\O\X^{i+1} \s \M\O\X$.
 
 We are now ready to prove the following lemma.
-\begin{lemma}
+\begin{lemma}\label{lem:bmm-maximized}
 Let $\Delta \ge 3$ and $1 \le i \le \Delta-3$.
 The following constraint is maximized:
 \begin{flalign*}
@@ -1581,8 +1581,124 @@ The following constraint is maximized:
 Observe that the proof is a simple and well-structure case analysis, that's what using the fast universal quantifier procedure gives us.
 The surprising fact is that the hard part of obtaining a lower bound for BMM is done. The rest are simple steps.
 
+Now, recall that, if we add some labels in some sets, we cannot make the problem harder. So the next step is to prove that there is a renaming such that, by possibly making some sets larger, allows us to map the constraint in \Cref{lem:bmm-maximized} to the active constraint of $\Pi_{\Delta,i+1}$.
+We use the renaming that we have already used in Round Eliminator:
+\begin{itemize}
+    \item $\{\M,\X\} \mapsto \M$ 
+    \item $\{\P,\O,\X\} \mapsto \O$ 
+    \item $\{\X\} \mapsto \Y$ 
+    \item $\{\Y,\M,\P,\O,\X\} \mapsto \X$
+    \item $\{\O,\X\} \mapsto \P$  
+\end{itemize}
+Note that there is no $\{\M,\O,\X\}$ in the above renaming. This is because, before renaming, we replace each $\{\M,\O,\X\}$ with $\{\Y,\M,\P,\O,\X\}$ (this essentially corresponds to the merging of $\langle \M, \O\rangle$ and $\langle \Y \rangle$ that we did between each step, in fact if we go back to Round Eliminator and check, we see that $\{\M,\O,\X\} = \langle \M, \O\rangle$ and $\{\Y,\M,\P,\O,\X\} = \langle \Y \rangle$).
 
+Let us first write the result before the renaming:
+\begin{flalign*}
+& \M\X \s \P\O\X^{\Delta-1} &\\
+& \X \s \P\O\X^{\Delta-2} \s \Y\M\P\O\X &\\
+& \O\X^{\Delta-1-i} \s \P\O\X^{i} \s \Y\M\P\O\X &\\
+& \O\X^{\Delta-2-i} \s \P\O\X^{i+1} \s \Y\M\P\O\X &
+\end{flalign*}
+Observe that the third configuration is dominated by the last one, so the result is just:
+\begin{flalign*}
+& \M\X \s \P\O\X^{\Delta-1} &\\
+& \X \s \P\O\X^{\Delta-2} \s \Y\M\P\O\X &\\
+& \O\X^{\Delta-2-i} \s \P\O\X^{i+1} \s \Y\M\P\O\X &
+\end{flalign*}
+If we now rename, we obtain:
+\begin{flalign*}
+& \M \s \O^{\Delta-1} &\\
+& \Y \s \O^{\Delta-2} \s \X &\\
+& \P^{\Delta-2-i} \s \O^{i+1} \s \X &
+\end{flalign*}
+This is exactly the active constraint of $\Pi_{\Delta,i+1}$, as desired.
 
+We now need to prove that, under the same renaming, the passive constraint that we obtain can be relaxed to the passive constraint of $\Pi_{\Delta,i+1}$. For this purpose, we use the easy way described in \Cref{sec:easy-new-passive}. So we start from the active constraint of $\Pi_{\Delta,i}$, and we replace each label with all the sets containing that label.
+So we start from this constraint:
+\begin{flalign*}
+& \M \s \O^{\Delta-1} &\\
+& \Y \s \O^{\Delta-2} \s \X &\\
+& \P^{\Delta-1-i}\s \O^{i} \s \X&
+\end{flalign*}
+And we replace labels as follows:
+\begin{itemize}
+    \item $\M \mapsto \M\X$ (because $\M$ is in the sets $\{\M,\X\}$ and $\{\Y,\M,\P,\O,\X\}$, which got renamed to $\M$ and $\X$ respectively)
+    \item $\P \mapsto \O\X$ 
+    \item $\X \mapsto \Y\M\P\O\X$ 
+    \item $\Y \mapsto \X$
+    \item $\O \mapsto \P\O\X$  
+\end{itemize}
+We obtain the following result:
+\begin{flalign*}
+& \M\X \s \P\O\X^{\Delta-1} &\\
+& \X \s \P\O\X^{\Delta-2} \s \Y\M\P\O\X &\\
+& \O\X^{\Delta-1-i}\s \P\O\X^{i} \s \Y\M\P\O\X&
+\end{flalign*}
+This is not exactly what we want. The problem $\Pi_{\Delta,i+1}$ has, as third configuration, $\O\X^{\Delta-2-i}\s \P\O\X^{i+1} \s \Y\M\P\O\X$.
+However, it is easy to see that, by replacing a single $\O\X$ with $\P\O\X$, we get the result that we need. Such a replacement can only make the problem easier, because it allows strictly more configurations. Hence, it is a valid relaxation.
+
+We can summarize what we got as follows.
+\begin{lemma}\label{lem:bmm-one-step}
+    Let $\Delta \ge 3$ and $1 \le i \le \Delta-3$. The problem $\re(\Pi_{\Delta,i})$ can be relaxed to $\Pi_{\Delta,i+1}$.
+\end{lemma}
+
+\subsection{Zero Round Solvability}
+We will apply \Cref{lem:bmm-one-step} recursively. Before that, let us quickly determine when we must stop. Let us see for which values of $i$ and $\Delta$ the problem $\Pi_{i,\Delta}$ is non-trivial. We use the characterization presented in \Cref{sec:zero}. We have $3$ cases to consider:
+\begin{itemize}
+    \item The $0$-round algorithm uses the configuration $\M \s \O^{\Delta-1}$. We are free to pick any configuration from $\M\O^\Delta$ to reach a contradiction. We can pick $\M^\Delta$, which is not in the passive constraint.
+    \item The $0$-round algorithm uses the configuration $\Y \s \O^{\Delta-2} \s \X$. We are free to pick any configuration from $\Y\O\X^\Delta$ to reach a contradiction. We can pick $\Y^\Delta$, which is not in the passive constraint.
+    \item The $0$-round algorithm uses the configuration $\P^{\Delta-1-i} \s \O^i \s \X$. Assume $\Delta-1-i > 0$, that is, $i \le \Delta-2$. Then, we are free to pick any configuration from $\P\O\X^\Delta$ to reach a contradiction. We can pick $\P^\Delta$, which is not in the passive constraint.
+\end{itemize}
+We obtain the following:
+\begin{lemma}\label{lem:bmm-zero}
+    If $i \le \Delta-2$, the problem $\Pi_{\Delta,i}$ is non-trivial.
+\end{lemma}
+\subsection{Iterating}
+We are now ready to get our main result. We first need to prove that we can indeed map our problem of interest BMM to the first problem of our sequence $\Pi_1$.
+\begin{lemma}\label{lem:bmm-start}
+BMM on $\Delta$-regular graphs can be relaxed to $\Pi_{\Delta,1}$.
+\end{lemma}
+\begin{proof}
+    White nodes that have configuration $\M \s \O^{\Delta-1}$ do not do anything. White nodes that have configuration $\P^\Delta$ replace one $\P$ with $\X$ and one $\P$ with $\O$. By construction all white nodes now satisfy the active constraint. It is easy to see that black nodes satisfy the passive constraint.
+\end{proof}
+
+This lemma follows by combining \Cref{lem:bmm-start} (mapping of BMM to $\Pi_1$) with \Cref{lem:bmm-one-step} (relation between $\Pi_{\Delta,i}$ and $\Pi_{\Delta,i+1}$) and \Cref{lem:bmm-zero} (non-triviality of $\Pi_{\Delta,\Delta-2}$).
+\begin{lemma}
+For all $\Delta \ge 3$, there exists a sequence of problems $\Pi_{\Delta,1},\ldots,\Pi_{\Delta,k}$ where:
+\begin{itemize}
+    \item BMM on $\Delta$-regular graphs can be relaxed to $\Pi_{\Delta,1}$
+    \item For all $1 \le i < k$, $\re(\Pi_{i,\Delta})$ can be relaxed to $\Pi_{\Delta,i+1}$
+    \item $\Pi_{\Delta,k}$ is non-trivial
+    \item $k = \Delta-2$
+\end{itemize}
+\end{lemma}
+
+Now, we are actually done. We have a lower bound sequence of length $\Omega(\Delta)$, and we can use an existing lifting lemma as a black-box to get a lower bound for the LOCAL model, see, e.g., \cite[Corollary 6.8]{balliu-brandt-etal-2025-on-the-universality}. We will later discuss lifting theorems in more detail.
+We obtain the following:
+\begin{theorem}
+    The BMM problem requires $\Omega(\min(\Delta,\log_\Delta n))$ rounds for deterministic algorithms and $\Omega(\min(\Delta,\log_\Delta \log n))$ rounds for randomized ones in the LOCAL model.
+\end{theorem}
+
+\subsection{Summary}
+Let us summarize what we did. We follwed these steps:
+\begin{enumerate}
+    \item We used Round Eliminator to obtain a sequence non-trivial of problems (using only \retorcommand{Speedup} and \retorcommand{Merge}) for some fixed values of $\Delta$.
+    \item We observed a pattern on the problems that we got, and we described the problems that we obtained in Round Eliminator in a compact way, by using a single problem with parameters $\Delta$ and $i$.
+    \item We proved that $\re(\Pi_{\Delta,i})$ can be relaxed to $\Pi_{\Delta,i+1}$, as follows:
+    \begin{itemize}
+        \item We first added some condensed configurations to the passive side of $\Pi_{\Delta,i}$. We added the configurations that Round Eliminator adds when pressing \retorcommand{Maximize}. Starting from this constraint, instead of the original constraint of $\Pi_{\Delta,i}$, makes it easier to prove that the constraint is maximized.
+        \item We proved that the passive constraint is maximized. This implies that, if we were to apply the universal quantifier, we would obtain the exact same constraint (where we transform each disjunction into a set).
+        \item We made some sets larger (which can only make the problem easier) and renamed the set in order to get that the result is equal to the active constraint of $\Pi_{\Delta,i+1}$.
+        \item We computed the new passive constraint, by just replacing the labels in the active constraint of $\Pi_{\Delta,i}$ with all sets containing them.
+        \item We relaxed the passive constraint to make it equal to the one of $\Pi_{\Delta,i+1}$.
+    \end{itemize}
+    \item We proved that for $i \in \Theta(\Delta)$ the problem $\Pi_{\Delta,i}$ is non-trivial.
+    \item Combining all the above, we obtained a sequence of length $\Theta(\Delta)$ of problems that are related by $\re$.
+    \item Using existing lifting theorems, we obtained a lower bound for the LOCAL model. 
+\end{enumerate}
+Most of the proofs based on round elimination follow this structure. Some are slightly different, due to the fact that they do not use the ``fast universal quantifier'' method.
+However, the case of BMM was easier than usual. It is typically the case that we need to argue about the diagrams of the problems that we get.
+We will see more complex examples later.
 
 \chapter{Other Lower Bound Techniques}
 [TODO: Marks, KMW, indistinguishability, ...]
