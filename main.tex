@@ -27,6 +27,7 @@
 \newcommand{\F}{\mathsf{F}}
 \newcommand{\G}{\mathsf{G}}
 \newcommand{\I}{\mathsf{I}}
+\renewcommand{\L}{\mathsf{L}}
 \newcommand{\M}{\mathsf{M}}
 \renewcommand{\O}{\mathsf{O}}
 \renewcommand{\P}{\mathsf{P}}
@@ -41,6 +42,9 @@
 \DeclareMathOperator{\rere}{\overline{\mathcal R}}
 \newcommand{\ccs}{\mathfrak{C}}
 \newcommand{\ccc}{\mathcal{C}}
+
+\newcommand{\nodeconst}{\ensuremath{\mathcal{N}}}
+\newcommand{\edgeconst}{\ensuremath{\mathcal{E}}}
 
 \newcommand{\retor}{https://roundeliminator.github.io/re-experimental/}
 
@@ -65,6 +69,9 @@
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}{Lemma}
 \newtheorem{observation}{Observation}
+\newtheorem{definition}{Definition}
+\newtheorem{corollary}{Corollary}
+
 
 \newcounter{open}
 \newtheorem{oq}[open]{Open Problem}
@@ -544,7 +551,7 @@ However, this also shows how we can step outside the LCLs world:
 \chapter{Round Elimination}
 Round elimination is a technique that can be used to prove lower (and upper) bounds in the LOCAL model. Informally, round elimination is a function $\re$ that takes as input a problem $\Pi$ in the black-white formalism and outputs a new problem $\Pi'$ in the black-white formalism, with the guarantee that $\Pi'$ is exactly one round easier than $\Pi$. This statement is omitting many details that we will see later. However, lower bounds are essentially obtained by applying this function multiple times.
 
-\section{The function $\re$.}
+\section{The function $\re$.}\label{sec:def-re}
 Let $\Pi = (\Sigma,W,B)$. We now see how the problem $\Pi' = (\Sigma',B',W') = \re(\Pi)$ is formally defined. We will later then see some intuition and some examples.
 First of all, as mentioned earlier, when describing a problem in the black-white formalism, we are implicitly specifying \emph{who} is going to output the labels. That is, while the problems $(\Sigma,W,B)$ and $(\Sigma,B,W)$ have exactly the same constraints, in the former case we require white nodes to output labels, and we say that white nodes are active, while black nodes are passive, while in the latter case we require the black nodes to output, and we say that black nodes are active and white nodes are passive. When applying the round elimination function, not only we obtain a problem that is exactly $1$ round easier, but we also flip the roles of active and passive. 
 Let's now see the definition of $\Pi'$. Let $\Delta$ be the degree of the white nodes, and $\delta$ be the degree of the black nodes.
@@ -1753,6 +1760,151 @@ Let us compare the two approaches:
     \item The other approach just required to mechanically combine two configurations at a time. However, there we could not just show that by combining configurations of $C$ we obtain configurations of $C'$. We had to do more. First, we maximized $C$ with a simple proof. Then, we showed that we could relax the maximized version of $C$ to $C'$.
     \end{itemize}
 \end{itemize}
+
+\section{Generalization of the Black-White Formalism}
+We now discuss the most general setting in which we know we can apply the round elimination technique. We first define problems with inputs. 
+\begin{definition}[Problems with input in the black-white formalism, \cite{balliu-brandt-etal-2025-on-the-universality}]\label{def:generalized-node-edge}
+	A problem $\Pi$ with input in the black-white formalism is a tuple $(\Sigma_{\mathrm{in}}, \Sigma_{\mathrm{out}}, \nodeconst,\edgeconst,g)$, where:
+	\begin{itemize}
+		\item $\Sigma_{\mathrm{in}}$ and $\Sigma_{\mathrm{out}}$ are finite sets representing, respectively, the input and output labels of $\Pi$.
+		\item $\nodeconst = (\nodeconst^1,\ldots,\nodeconst^\Delta)$ consists of $\Delta$ collections $\nodeconst^i$ of cardinality-$i$ multisets $\{\ell_1,\ldots,\ell_i\}$ with $\ell_1,\ldots,\ell_i$ from $\Sigma_{\mathrm{out}}$. $\nodeconst$ is the \emph{white constraint} of $\Pi$. $\nodeconst^i$ represents the constraint of white nodes of degree $i$.
+		\item $\edgeconst = (\edgeconst^1,\ldots,\edgeconst^\delta)$ consists of $\Delta$ collections $\nodeconst^i$ of cardinality-$i$ multisets $\{\ell_1,\ldots,\ell_i\}$ with $\ell_1,\ldots,\ell_i$ from $\Sigma_{\mathrm{out}}$. 
+		$\edgeconst$ is the \emph{black constraint} of $\Pi$. $\edgeconst^i$ represents the constraint of black nodes of degree $i$.
+		\item $g : \Sigma_{\mathrm{in}} \rightarrow 2^{\Sigma_{\mathrm{out}}}$ is a function that assigns to each label from $\Sigma_{\mathrm{in}}$ a subset of labels from $\Sigma_{\mathrm{out}}$.
+	\end{itemize}
+	The \emph{degree of $\Pi$} is defined as the maximum between $\Delta$ and $\delta$.
+	Let $G = (U,V,E)$ be a $2$-colored bipartite graph. Let $U$ be the set of white nodes and $V$ be the set of black nodes. Assume that white nodes have maximum degree $\Delta$ and black nodes have maximum degree $\delta$, and that to each edge $e$  is assigned a label $f_{\mathrm{in}}(e)$ from $\Sigma_{\mathrm{in}}$.
+	A correct solution for $\Pi$ on $G$ is given by an edge labeling $f_{\mathrm{out}} : E(G) \rightarrow \Sigma_{\mathrm{out}}$ such that the following holds: 
+	\begin{itemize}
+		\item For each white node $u$, the multiset consisting of the labels assigned by $f_{\mathrm{out}}$ to the edges incident to $v$ is contained in $\nodeconst^{\deg(u)}$.
+		\item For each black node $v$, the multiset consisting of the labels assigned by $f_{\mathrm{out}}$ to the edges incident to $v$ is contained in $\edgeconst^{\deg(v)}$.
+		\item For every edge $e$, the label $f_{\mathrm{out}}(e)$ is contained in the label set $g(f_{\mathrm{in}}(e))$.
+	\end{itemize}	
+\end{definition}
+In other words, we consider a non-regular setting, and for each degree we list allowed configurations. Moreover, there is a function specifying, for each input label of an edge, the allowed output labels on that edge.
+
+There is a different way that we could use to define problems with inputs. For example, for each degree $i$, we could list multisets of size $i$ of input-output label pairs (without needing to define $f_{\mathrm{out}}$).
+It turns out that this formalism would have the same expressive power as the one that we provided, and there is a black-box way to convert problems between these two formalisms.
+
+We now see how the definition of  $\re$ is extended to the problems of \Cref{def:generalized-node-edge}.
+\begin{definition}[\cite{balliu-brandt-etal-2025-on-the-universality}]
+	Let $\Pi = (\Sigma^{\Pi}_{\mathrm{in}}, \Sigma^{\Pi}_{\mathrm{out}}, \nodeconst_{\Pi} = (\nodeconst_{\Pi}^1,\ldots,\nodeconst_{\Pi}^\Delta),\edgeconst_{\Pi} = (\edgeconst_{\Pi}^1,\ldots,\edgeconst_{\Pi}^\delta),g_{\Pi})$ be a problem with input in the black-white formalism.
+	Then, we define the problem $\re(\Pi) = (\Sigma^{\re(\Pi)}_{\mathrm{in}}, \Sigma^{\re(\Pi)}_{\mathrm{out}},\edgeconst_{\re(\Pi)}, \nodeconst_{\re(\Pi)},g_{\re(\Pi)})$ as follows:
+	\begin{itemize}
+		\item $\Sigma^{\re(\Pi)}_{\mathrm{in}} := \Sigma^{\Pi}_{\mathrm{in}}$.
+		\item $\edgeconst_{\re(\Pi)}$ is defined as $(\edgeconst_{\re(\Pi)}^1,\ldots,\edgeconst_{\re(\Pi)}^\delta)$, where $\edgeconst_{\re(\Pi)}^i$ contains all the multisets $\{\L_1,\ldots,\L_i\}$, where $\L_i \subseteq 2^{\Sigma^{\Pi}_{\mathrm{out}}}$, such that:
+		\begin{itemize}
+			\item For any choice $(\ell_1,\ldots,\ell_i) \in \L_1 \times \ldots \times \L_i$, the multiset $\{\ell_1,\ldots,\ell_i\}$ is in $\edgeconst_{\Pi}^i$;
+			\item By adding any label in $\Sigma^{\Pi}_{\mathrm{out}}$ to any set $\L_i$, the above condition is not satisfied anymore.
+		\end{itemize} 
+		\item $\Sigma^{\re(\Pi)}_{\mathrm{out}} := \bigcup_{i=1}^{\delta} \bigcup_{C \in \edgeconst_{\re(\Pi)}^i} C$. That is, the set of output labels of $\re(\Pi)$ is the set of sets that appear in at least one configuration contained in $\edgeconst_{\re(\Pi)}$.
+		\item $\nodeconst_{\re(\Pi)}$ is defined as $(\nodeconst_{\re(\Pi)}^1,\ldots,\nodeconst_{\re(\Pi)}^\Delta)$, where $\nodeconst_{\re(\Pi)}^i$ contains all the multisets $\{\L_1,\ldots,\L_i\}$, where $\L_i \in \Sigma^{\re(\Pi)}_{\mathrm{out}}$, such that there exists a choice $(\ell_1,\ldots,\ell_i) \in \L_1 \times \ldots \times \L_i$ satisfying that the multiset $\{\ell_1,\ldots,\ell_i\}$ is in $\nodeconst_{\Pi}^i$;
+		\item For each $\ell \in \Sigma^{\Pi}_{\mathrm{in}}$, $g_{\re(\Pi)}$ is defined as  $g_{\re(\Pi)}(\ell) := 2^{g_{\Pi}(\ell)} \cap \Sigma^{\re(\Pi)}_{\mathrm{out}}$. In other words, a label of $\Sigma^{\re(\Pi)}_{\mathrm{out}}$, which is a subset of $\Sigma^{\Pi}_{\mathrm{out}}$, is allowed on input $\ell$ if and only if all its elements are allowed with $\ell$ according to the function $g_{\Pi}$.
+	\end{itemize}
+\end{definition}
+Note that, for problems in $(\Delta,\delta)$-biregular regular graphs with no inputs, this definition corresponds to the one given in \Cref{sec:def-re}.
+
+\section{Lifting Theorems}
+We now discuss the most general form of lifting theorems that are currently known. 
+
+\begin{theorem}[\cite{balliu-brandt-etal-2025-on-the-universality}, rephrased]\label{thm:newlifting}
+	Let $\Pi_0, \Pi_1, \ldots, \Pi_{k}$ be a sequence of problems with input in the black-white formalism, where input labels come from $\Sigma_{\mathrm{in}}$. Let $\Pi_{\mathrm{in}}$ be a problem (without inputs) in the black-white formalism where output labels come from $\Sigma_{\mathrm{in}}$.
+	Assume that, for all $0 \le i < k$, and for an integer $L$, the following holds:
+	\begin{itemize}
+		\item $\Pi_{i+1}$ is a relaxation of $\re(\Pi_i)$;
+		\item The number of input and output labels of $\Pi_i$ are upper bounded by $L$.
+	\end{itemize}
+	Also, assume that $\Pi_k$ has at most $L$ input and output labels and is not $0$-round solvable in the deterministic PN model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input. Let $\Delta$ be the degree of $\Pi_0$. Then, there exists some universal constant $c > 0$ such that, for all $n$, on trees of $n$ nodes and maximum degree at most $\Delta$, $\Pi_0$ requires at least \[\textstyle\min\{(k-1)/2, (\log_\Delta n -  \log_\Delta \log L -c)/c\}\] rounds in the deterministic LOCAL model and at least \[\textstyle\min\{(k-1)/2, (\log_\Delta \log n -  \log_\Delta \log L -c)/c\}\] rounds in the randomized LOCAL model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input.
+\end{theorem}
+Starting from this theorem, we can have multiple useful corollaries. Moreover, we can slightly generalize this theorem to handle non-standard settings (i.e., different range of IDs, different required failure probability). We will discuss this extension later.
+
+A first useful corollary is about fixed points.
+\begin{corollary}[\cite{balliu-brandt-etal-2025-on-the-universality}, rephrased]\label{cor:lifting-fp}
+	Let $\Pi$ be a problem in the black-white formalism satisfying $\re(\Pi) = \Pi$ or $\re(\re(\Pi)) = \Pi$, and where inputs come from $\Sigma_{\mathrm{in}}$. Let $\Pi_{\mathrm{in}}$ be a problem (without inputs) in the black-white formalism where output labels come from $\Sigma_{\mathrm{in}}$.
+	Assume that $\Pi$ is not $0$-round solvable in the deterministic PN model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input. Then, on trees of $n$ nodes and maximum degree at most $\Delta = O(1)$, $\Pi$ requires  $\Omega(\log n)$ rounds in the deterministic LOCAL model and $\Omega(\log \log n)$ rounds in the randomized LOCAL model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input.
+\end{corollary}
+\begin{proof}
+    The proof is easy: $\Pi$ has some degree $\Delta$ and some number of labels $L$. Since $\Pi$ by assumption is a non-trivial fixed point, we can apply \Cref{thm:newlifting} with a sequence of infinite length (or, in other words, we can pick $k$ arbitrarily large). Observe that $\Delta$ and $L$ are constants that only depend on the description of the problem (and in particular not on $n$). Hence, the term $\log_\Delta \log L$ does not affect the lower bound.
+\end{proof}
+An interesting other corollary of \Cref{thm:newlifting} is that we do not really need a fixed point to get the result of \Cref{cor:lifting-fp}. In fact, suppose we know that a problem admits a sequence of infinite length, where we also know that the number of labels does not grow ``too fast''. Then, we can pick $k$ large, and we know that $L$ will still be ``small-enough''. For example, if the labels grow at most linearly, we can prove the following.
+\begin{corollary}[\cite{balliu-brandt-etal-2025-on-the-universality}, rephrased]\label{cor:lifting-linear-growth}
+	Let $\Pi_0, \Pi_1, \ldots$ be an infinite sequence of problems with input in the black-white formalism, where input labels come from $\Sigma_{\mathrm{in}}$. Let $\Pi_{\mathrm{in}}$ be a problem (without inputs) in the black-white formalism where output labels come from $\Sigma_{\mathrm{in}}$.
+	Assume that, for all $i \ge 0$, and for some constant $c$, the following holds:
+	\begin{itemize}
+		\item $\Pi_{i+1}$ is a relaxation of $\re(\Pi_i)$,
+		\item the number of input and output labels of $\Pi_i$ are upper bounded by $c \cdot (i+1)$, and
+		\item $\Pi_i$ is not $0$-round solvable in the deterministic PN model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input.
+	\end{itemize}
+	Let $\Delta$ be the degree of $\Pi_0$. Then, for all $n$, on trees of $n$ nodes and maximum degree at most $\Delta$, $\Pi_0$ requires $\Omega(\log n)$ rounds in the deterministic LOCAL model and $\Omega(\log \log n)$ rounds in the randomized LOCAL model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input.
+\end{corollary}
+One may wonder whether the bound on the growth is really necessary. Is having an infinite sequence sufficient to get an $\Omega(\log n)$ lower bound? The answer is no, we can only get an $\Omega(\log^\star n)$ lower bound.
+\begin{corollary}[\cite{balliu-brandt-etal-2025-on-the-universality}, rephrased]\label{cor:lift-logstar}
+	Let $\Pi_0, \Pi_1, \ldots$ be an infinite sequence of problems with input in the black-white formalism, where input labels come from $\Sigma_{\mathrm{in}}$. Let $\Pi_{\mathrm{in}}$ be a problem (without inputs) in the black-white formalism where output labels come from $\Sigma_{\mathrm{in}}$.
+	Assume that, for all $i \ge 0$, the following holds:
+	\begin{itemize}
+		\item $\Pi_{i+1}$ is a relaxation of $\re(\Pi_i)$, and
+		\item $\Pi_i$ is not $0$-round solvable in the deterministic PN model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input.
+	\end{itemize}
+	Let $\Delta$ be the degree of $\Pi_0$. Then, for all $n$, on trees of $n$ nodes and maximum degree at most $\Delta$, $\Pi_0$ requires $\Omega(\log^* n)$ rounds for both randomized and deterministic LOCAL algorithms, even if a solution for $\Pi_{\mathrm{in}}$ is given as input.
+\end{corollary}
+In fact, \Cref{cor:lift-logstar} is tight. Consider for example the problem of $3$-coloring cycles.
+If we apply $\re$ recursively, we know that we cannot ever get a problem that can be solved in $0$ rounds, since otherwise this would give an $O(1)$-rounds algorithm for $3$-coloring, which does not exist. We also know that $3$-coloring can be solved in $O(\log^\star n)$ rounds. \Cref{cor:lift-logstar} essentially says that, once we know that a problem cannot be solved in $0$ rounds, we get an $\Omega(\log^\star n)$ lower bound for free, and for $3$-coloring this happens to be tight. One may wonder what exactly breaks at this $\log^\star n$ threshold. It is actually easy to see where  $\log^\star n$ comes from:
+\begin{itemize}
+    \item The number of labels of $\re(\Pi)$ is at most exponentially larger than the number of labels of $\Pi$.
+    \item So if we consider the sequence $\Pi$, $\re(\Pi)$, $\re(\re(\Pi))$, $\ldots$, the number of labels grows at most as a power tower.
+    \item So if we take a sequence of length sufficiently below $\log^\star n$, we get that $L$ is small-enough so that $\log_\Delta \log n - \log_\Delta \log L$ is still at least, e.g., $(\log_\Delta \log n)/2$.
+    \item At that point, the $\min$ of \Cref{thm:basic-lifting-fp} will be dominated by the first term, the sequence length.
+\end{itemize}
+The $\omega(1)-o(\log^\star n)$ gap for LCLs on trees is proved exactly in this way.
+
+Another interesting corollary is the one for the case in which we provide an infinite sequence of sequences, one for each value of $\Delta$. 
+\begin{corollary}[\cite{balliu-brandt-etal-2025-on-the-universality}, rephrased]\label{cor:lift-delta}
+	Let $\mathcal{P} = (\Pi^j \mid j>0)$ be a family of problems, where $\Pi^j$ is a problem of degree $j$ in the black-white formalism, with inputs from $\Sigma_{\mathrm{in}}^{\Pi^j}$.
+	Let $\mathcal{P}_{\mathrm{in}} = (\Pi^j_{\mathrm{in}} \mid j>0)$ be a family of problems (without inputs) in the black-white formalism where output labels come from $\Sigma_{\mathrm{in}}^{\Pi^j}$.
+	Suppose that, for each $j$, there exists a sequence of problems starting from $\Pi^j$ satisfying the requirements of \Cref{thm:newlifting} w.r.t.\ input $\Pi^j_{\mathrm{in}}$ and of length $f(j)$, for some $f$. 
+	Moreover, suppose that, for each $j$, the number of labels of $\Pi^j$ is at most $2^{j^c}$ for some universal constant $c$.
+	Then, $\mathcal{P}$ requires \[\Omega(\min\{f(\Delta), \log_\Delta n\})\] rounds for deterministic algorithms and \[\Omega(\min\{f(\Delta), \log_\Delta \log n\})\] for randomized ones, in $n$-node trees of maximum degree $\Delta$, even if a solution for $\mathcal{P}_{\mathrm{in}}$ is given as input.
+\end{corollary}
+The claim just follows by applying \Cref{thm:newlifting} on each sequence separately. Note: this corollary is why we did not write \Cref{thm:newlifting} using asymptotic notation (if the asymptotic notation was hiding dependencies in $\Delta$, now that we have to make them explicit, it would have been a problem; instead, there is some universal constant $c$ that does not depend on any parameter of the theorem).
+
+Note that the bound on the number of labels is not needed to get a lower bound. However, the bound of $2^{j^c}$ is convenient because it allows us to ignore the $-\log_\Delta \log L$ term, obtaining an easier to state lower bound. Note that, from \Cref{cor:lift-delta}, one can obtain lower bounds as a function of $n$, by picking the value of $\Delta$ that maximized the $\min$ expression. For example, suppose $f(\Delta) = \Delta$. Then, by considering a family of graphs of degree $\Delta = \log \log n / \log \log \log n$, we obtain a randomized lower bound of $\Omega(\log \log n / \log \log \log n)$, and by considering a family of graphs of degree $\Delta = \log n / \log \log n$, we obtain a deterministic lower bound of $\Omega(\log  n / \log \log n)$.
+
+Note that, if $L$ were to be much larger than $2^{j^c}$, say $j^{j^{j^j}}$, we would have obtained a randomized lower bound that is only $\Omega(\min(f(\Delta),\log_\Delta \log n - \Delta^\Delta))$. Suppose $f(\Delta) = \Delta$. Now we cannot get a lower bound of $\Omega(\log \log n / \log \log \log n)$ by picking $\Delta = \log \log n / \log \log \log n$. In fact, it is an open question whether we can obtain good lower bounds, if the number of labels, as a function of $\Delta$, is too large.
+\begin{oq}
+    Can we obtain a lifting theorem for lower bounds as a function of $\Delta$ that has a better dependence on the number of labels?
+\end{oq}
+
+\subsubsection{Proof Structure}
+We will not see an explicit proof of \Cref{thm:newlifting}. However, we will see the proof structure.
+The theorem is proved as follows:
+\begin{enumerate}
+	\item Let $\Pi'$ be a relaxation of $\re(\Pi)$. Prove that, if there exists a randomized $k$-round algorithm for $\Pi$ with failure probability $p$ (which could depend on $n$), then there exists a randomized $(k-1)$-round algorithm for $\Pi'$ with some failure probability $p'$ that is not too large compared to $p$.\label{point:randomre}
+	\item Prove that, if a problem cannot be solved in $0$ rounds in the deterministic PN model, then any $0$-rounds randomized PN algorithm for the same problem must fail with some large probability.\label{point:zerorounds}
+	\item Apply \Cref{point:randomre} recursively. The number of times that we can apply this recursive procedure before obtaining a failure probability that is larger than the one in \Cref{point:zerorounds} is a lower bound on the runtime for solving the problem in the randomized PN model. This directly gives a lower bound in the randomized LOCAL model as well.\label{point:combine}\label{point:withn}\label{point:randlocal}
+	\item Prove that a randomized lower bound in the LOCAL model implies an even stronger deterministic lower bound.\label{point:detlocal}
+\end{enumerate}
+For the setting of regular graphs with no inputs, a proof of \Cref{point:randomre} can be found in \cite{brandt-olivetti-2020-truly-tight-in-delta-bounds-for}, while a proof of \Cref{point:zerorounds,point:combine,point:detlocal} can be found in \cite{balliu-brandt-etal-2022-distributed-delta-coloring}. 
+
+For the generalized setting, a proof of a special case of \Cref{point:randomre} can be found in \cite{grunau-rozhon-brandt-2022-the-landscape-of-distributed}, and the rest can be found in \cite{balliu-brandt-etal-2025-on-the-universality}.
+
+\subsubsection{Extension}
+We will now discuss some extensions of \Cref{thm:newlifting}. In more detail, that theorem assumes that, for randomized algorithms, we allow $1/n$ failure probability, and that IDs are polynomially bounded.
+
+The randomized lower bound does not actually depend on the ID space, and one can check the proof in \cite{balliu-brandt-etal-2025-on-the-universality} to see that we can replace the $\log_\Delta \log n$ term with $\log_\Delta \log 1/p$. However, the proof uses the fact that the claimed bound is below the girth of the graph. Hence, we need to add a third term to the $\min$ expression. We obtain the following.
+
+\begin{theorem}\label{thm:newlifting-ext}
+	Let $\Pi_0, \Pi_1, \ldots, \Pi_{k}$ be a sequence of problems with input in the black-white formalism, where input labels come from $\Sigma_{\mathrm{in}}$. Let $\Pi_{\mathrm{in}}$ be a problem (without inputs) in the black-white formalism where output labels come from $\Sigma_{\mathrm{in}}$.
+	Assume that, for all $0 \le i < k$, and for an integer $L$, the following holds:
+	\begin{itemize}
+		\item $\Pi_{i+1}$ is a relaxation of $\re(\Pi_i)$;
+		\item The number of input and output labels of $\Pi_i$ are upper bounded by $L$.
+	\end{itemize}
+	Also, assume that $\Pi_k$ has at most $L$ input and output labels and is not $0$-round solvable in the deterministic PN model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input. Let $\Delta$ be the degree of $\Pi_0$. Then, there exists some universal constant $c > 0$ such that, for all $n$, on trees of $n$ nodes and maximum degree at most $\Delta$, $\Pi_0$ requires at least \[\textstyle\min\{(k-1)/2, (\log_\Delta \log 1/p -  \log_\Delta \log L -c)/c,(\log_\Delta n - c)/c\}\] rounds in the randomized LOCAL model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input, for any algorithm with local failure probability at most $p$.
+\end{theorem}
+
+[TODO: deterministic generalized lifting]
+[TODO: while the bounds are stated for trees, at least the ones obtained on regular trees also hold on high-girth graphs, and in particular the lower bound holds for nodes far away from leaves, which is useful to know if one wants to take a regular subgraph and prove a lower bound there]
+
 \chapter{Other Lower Bound Techniques}
 [TODO: Marks, KMW, indistinguishability, ...]
 
