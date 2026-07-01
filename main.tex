@@ -1814,14 +1814,14 @@ We now discuss the most general form of lifting theorems that are currently know
 		\item $\Pi_{i+1}$ is a relaxation of $\re(\Pi_i)$;
 		\item The number of input and output labels of $\Pi_i$ are upper bounded by $L$.
 	\end{itemize}
-	Also, assume that $\Pi_k$ has at most $L$ input and output labels and is not $0$-round solvable in the deterministic PN model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input. Let $\Delta$ be the degree of $\Pi_0$. Then, there exists some universal constant $c > 0$ such that, for all $n$, on trees of $n$ nodes and maximum degree at most $\Delta$, $\Pi_0$ requires at least \[\textstyle\min\{(k-1)/2, (\log_\Delta n -  \log_\Delta \log L -c)/c\}\] rounds in the deterministic LOCAL model and at least \[\textstyle\min\{(k-1)/2, (\log_\Delta \log n -  \log_\Delta \log L -c)/c\}\] rounds in the randomized LOCAL model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input.
+	Also, assume that $\Pi_k$ has at most $L$ input and output labels and is not $0$-round solvable in the deterministic PN model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input. Let $\Delta$ be the degree of $\Pi_0$. Then, there exists some universal constant $c > 0$ such that, for all $n$, on trees of $n$ nodes and maximum degree at most $\Delta$, $\Pi_0$ requires at least \[\textstyle\min\{(k-1)/2, (\log_\Delta n -  \log_\Delta \log L -c)/c\}\] rounds in the deterministic LOCAL model and at least \[\textstyle\min\{(k-1)/2, (\log_\Delta \log n -  \log_\Delta \log L -c)/c\}\] rounds in the randomized LOCAL model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input, even if $n$, $\Delta$ and $\delta$ are known by all nodes. 
 \end{theorem}
 Starting from this theorem, we can have multiple useful corollaries. Moreover, we can slightly generalize this theorem to handle non-standard settings (i.e., different range of IDs, different required failure probability). We will discuss this extension later.
 
 A first useful corollary is about fixed points.
 \begin{corollary}[\cite{balliu-brandt-etal-2025-on-the-universality}, rephrased]\label{cor:lifting-fp}
 	Let $\Pi$ be a problem in the black-white formalism satisfying $\re(\Pi) = \Pi$ or $\re(\re(\Pi)) = \Pi$, and where inputs come from $\Sigma_{\mathrm{in}}$. Let $\Pi_{\mathrm{in}}$ be a problem (without inputs) in the black-white formalism where output labels come from $\Sigma_{\mathrm{in}}$.
-	Assume that $\Pi$ is not $0$-round solvable in the deterministic PN model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input. Then, on trees of $n$ nodes and maximum degree at most $\Delta = O(1)$, $\Pi$ requires  $\Omega(\log n)$ rounds in the deterministic LOCAL model and $\Omega(\log \log n)$ rounds in the randomized LOCAL model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input.
+	Assume that $\Pi$ is not $0$-round solvable in the deterministic PN model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input. Then, on trees of $n$ nodes and maximum degree at most $\Delta = O(1)$, $\Pi$ requires  $\Omega(\log n)$ rounds in the deterministic LOCAL model and $\Omega(\log \log n)$ rounds in the randomized LOCAL model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input, even if $n$, $\Delta$ and $\delta$ are known by all nodes. 
 \end{corollary}
 \begin{proof}
     The proof is easy: $\Pi$ has some degree $\Delta$ and some number of labels $L$. Since $\Pi$ by assumption is a non-trivial fixed point, we can apply \Cref{thm:newlifting} with a sequence of infinite length (or, in other words, we can pick $k$ arbitrarily large). Observe that $\Delta$ and $L$ are constants that only depend on the description of the problem (and in particular not on $n$). Hence, the term $\log_\Delta \log L$ does not affect the lower bound.
@@ -1833,7 +1833,7 @@ An interesting other corollary of \Cref{thm:newlifting} is that we do not really
 	\begin{itemize}
 		\item $\Pi_{i+1}$ is a relaxation of $\re(\Pi_i)$,
 		\item the number of input and output labels of $\Pi_i$ are upper bounded by $c \cdot (i+1)$, and
-		\item $\Pi_i$ is not $0$-round solvable in the deterministic PN model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input.
+		\item $\Pi_i$ is not $0$-round solvable in the deterministic PN model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input, even if $n$, $\Delta$ and $\delta$ are known by all nodes. 
 	\end{itemize}
 	Let $\Delta$ be the degree of $\Pi_0$. Then, for all $n$, on trees of $n$ nodes and maximum degree at most $\Delta$, $\Pi_0$ requires $\Omega(\log n)$ rounds in the deterministic LOCAL model and $\Omega(\log \log n)$ rounds in the randomized LOCAL model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input.
 \end{corollary}
@@ -1845,7 +1845,7 @@ One may wonder whether the bound on the growth is really necessary. Is having an
 		\item $\Pi_{i+1}$ is a relaxation of $\re(\Pi_i)$, and
 		\item $\Pi_i$ is not $0$-round solvable in the deterministic PN model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input.
 	\end{itemize}
-	Let $\Delta$ be the degree of $\Pi_0$. Then, for all $n$, on trees of $n$ nodes and maximum degree at most $\Delta$, $\Pi_0$ requires $\Omega(\log^* n)$ rounds for both randomized and deterministic LOCAL algorithms, even if a solution for $\Pi_{\mathrm{in}}$ is given as input.
+	Let $\Delta$ be the degree of $\Pi_0$. Then, for all $n$, on trees of $n$ nodes and maximum degree at most $\Delta$, $\Pi_0$ requires $\Omega(\log^* n)$ rounds for both randomized and deterministic LOCAL algorithms, even if a solution for $\Pi_{\mathrm{in}}$ is given as input, even if $n$, $\Delta$ and $\delta$ are known by all nodes. 
 \end{corollary}
 In fact, \Cref{cor:lift-logstar} is tight. Consider for example the problem of $3$-coloring cycles.
 If we apply $\re$ recursively, we know that we cannot ever get a problem that can be solved in $0$ rounds, since otherwise this would give an $O(1)$-rounds algorithm for $3$-coloring, which does not exist. We also know that $3$-coloring can be solved in $O(\log^\star n)$ rounds. \Cref{cor:lift-logstar} essentially says that, once we know that a problem cannot be solved in $0$ rounds, we get an $\Omega(\log^\star n)$ lower bound for free, and for $3$-coloring this happens to be tight. One may wonder what exactly breaks at this $\log^\star n$ threshold. It is actually easy to see where  $\log^\star n$ comes from:
@@ -1863,7 +1863,7 @@ Another interesting corollary is the one for the case in which we provide an inf
 	Let $\mathcal{P}_{\mathrm{in}} = (\Pi^j_{\mathrm{in}} \mid j>0)$ be a family of problems (without inputs) in the black-white formalism where output labels come from $\Sigma_{\mathrm{in}}^{\Pi^j}$.
 	Suppose that, for each $j$, there exists a sequence of problems starting from $\Pi^j$ satisfying the requirements of \Cref{thm:newlifting} w.r.t.\ input $\Pi^j_{\mathrm{in}}$ and of length $f(j)$, for some $f$. 
 	Moreover, suppose that, for each $j$, the number of labels of $\Pi^j$ is at most $2^{j^c}$ for some universal constant $c$.
-	Then, $\mathcal{P}$ requires \[\Omega(\min\{f(\Delta), \log_\Delta n\})\] rounds for deterministic algorithms and \[\Omega(\min\{f(\Delta), \log_\Delta \log n\})\] for randomized ones, in $n$-node trees of maximum degree $\Delta$, even if a solution for $\mathcal{P}_{\mathrm{in}}$ is given as input.
+	Then, $\mathcal{P}$ requires \[\Omega(\min\{f(\Delta), \log_\Delta n\})\] rounds for deterministic algorithms and \[\Omega(\min\{f(\Delta), \log_\Delta \log n\})\] for randomized ones, in $n$-node trees of maximum degree $\Delta$, even if a solution for $\mathcal{P}_{\mathrm{in}}$ is given as input, even if $n$, $\Delta$ and $\delta$ are known by all nodes. 
 \end{corollary}
 The claim just follows by applying \Cref{thm:newlifting} on each sequence separately. Note: this corollary is why we did not write \Cref{thm:newlifting} using asymptotic notation (if the asymptotic notation was hiding dependencies in $\Delta$, now that we have to make them explicit, it would have been a problem; instead, there is some universal constant $c$ that does not depend on any parameter of the theorem).
 
@@ -1881,15 +1881,16 @@ The theorem is proved as follows:
 	\item Let $\Pi'$ be a relaxation of $\re(\Pi)$. Prove that, if there exists a randomized $k$-round algorithm for $\Pi$ with failure probability $p$ (which could depend on $n$), then there exists a randomized $(k-1)$-round algorithm for $\Pi'$ with some failure probability $p'$ that is not too large compared to $p$.\label{point:randomre}
 	\item Prove that, if a problem cannot be solved in $0$ rounds in the deterministic PN model, then any $0$-rounds randomized PN algorithm for the same problem must fail with some large probability.\label{point:zerorounds}
 	\item Apply \Cref{point:randomre} recursively. The number of times that we can apply this recursive procedure before obtaining a failure probability that is larger than the one in \Cref{point:zerorounds} is a lower bound on the runtime for solving the problem in the randomized PN model. This directly gives a lower bound in the randomized LOCAL model as well.\label{point:combine}\label{point:withn}\label{point:randlocal}
-	\item Prove that a randomized lower bound in the LOCAL model implies an even stronger deterministic lower bound.\label{point:detlocal}
+	\item Prove that a randomized lower bound in the LOCAL model implies an even stronger deterministic lower bound. This is done via a ``computing new IDs + lie about $n$'' argument.\label{point:detlocal}
 \end{enumerate}
 For the setting of regular graphs with no inputs, a proof of \Cref{point:randomre} can be found in \cite{brandt-olivetti-2020-truly-tight-in-delta-bounds-for}, while a proof of \Cref{point:zerorounds,point:combine,point:detlocal} can be found in \cite{balliu-brandt-etal-2022-distributed-delta-coloring}. 
 
 For the generalized setting, a proof of a special case of \Cref{point:randomre} can be found in \cite{grunau-rozhon-brandt-2022-the-landscape-of-distributed}, and the rest can be found in \cite{balliu-brandt-etal-2025-on-the-universality}.
 
-\subsubsection{Extension}
-We will now discuss some extensions of \Cref{thm:newlifting}. In more detail, that theorem assumes that, for randomized algorithms, we allow $1/n$ failure probability, and that IDs are polynomially bounded.
+\subsubsection{Extensions}
+We will now discuss some extensions of \Cref{thm:newlifting}. In more detail, that theorem assumes that, for randomized algorithms, we allow $1/n$ failure probability, and that IDs are from $\{1,\ldots,n\}$.
 
+\paragraph{Different failure probability.}
 The randomized lower bound does not actually depend on the ID space, and one can check the proof in \cite{balliu-brandt-etal-2025-on-the-universality} to see that we can replace the $\log_\Delta \log n$ term with $\log_\Delta \log 1/p$. However, the proof uses the fact that the claimed bound is below the girth of the graph. Hence, we need to add a third term to the $\min$ expression. We obtain the following.
 
 \begin{theorem}\label{thm:newlifting-ext}
@@ -1899,12 +1900,18 @@ The randomized lower bound does not actually depend on the ID space, and one can
 		\item $\Pi_{i+1}$ is a relaxation of $\re(\Pi_i)$;
 		\item The number of input and output labels of $\Pi_i$ are upper bounded by $L$.
 	\end{itemize}
-	Also, assume that $\Pi_k$ has at most $L$ input and output labels and is not $0$-round solvable in the deterministic PN model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input. Let $\Delta$ be the degree of $\Pi_0$. Then, there exists some universal constant $c > 0$ such that, for all $n$, on trees of $n$ nodes and maximum degree at most $\Delta$, $\Pi_0$ requires at least \[\textstyle\min\{(k-1)/2, (\log_\Delta \log 1/p -  \log_\Delta \log L -c)/c,(\log_\Delta n - c)/c\}\] rounds in the randomized LOCAL model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input, for any algorithm with local failure probability at most $p$.
+	Also, assume that $\Pi_k$ has at most $L$ input and output labels and is not $0$-round solvable in the deterministic PN model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input. Let $\Delta$ be the degree of $\Pi_0$. Then, there exists some universal constant $c > 0$ such that, for all $n$, on trees of $n$ nodes and maximum degree at most $\Delta$, $\Pi_0$ requires at least \[\textstyle\min\{(k-1)/2, (\log_\Delta \log 1/p -  \log_\Delta \log L -c)/c,(\log_\Delta n - c)/c\}\] rounds in the randomized LOCAL model, even if a solution for $\Pi_{\mathrm{in}}$ is given as input, for any algorithm with local failure probability at most $p$, even if $n$, $\Delta$ and $\delta$ are known by all nodes. 
 \end{theorem}
 
-[TODO: deterministic generalized lifting]
-[TODO: while the bounds are stated for trees, at least the ones obtained on regular trees also hold on high-girth graphs, and in particular the lower bound holds for nodes far away from leaves, which is useful to know if one wants to take a regular subgraph and prove a lower bound there]
-[TODO: make explicit that lower bounds hold even if n and delta are known]
+\paragraph{High-girth graphs.}
+For problems defined on $(\Delta,\delta)$-biregular graphs, not only we know that the lower bounds that we get from \Cref{thm:newlifting} and its corollaries hold on trees, but we also know that the considered problem is hard for all nodes that, within their running time, do not see any leaf. Hence, the same lower bounds hold in high-girth regular graphs.
+
+\paragraph{Different ID space.}
+In the case of deterministic algorithms, we know that the lower bounds obtained from  \Cref{thm:newlifting} and its corollaries hold already when IDs are from $\{1,\ldots,n\}$. By checking the proof (in \cite{balliu-brandt-etal-2025-on-the-universality}) one can see that assuming that IDs come from a larger ID space would not improve the lower bounds.
+In more detail, we currently do not have any lifting theorem that would allow us to directly get that deterministically $3$-colorijng cycles requires $\Omega(\min(n,\log^\star |S|))$, where $S$ is the set of possible IDs.
+
+
+
 \chapter{Other Lower Bound Techniques}
 [TODO: Marks, KMW, indistinguishability, ...]
 
