@@ -1913,6 +1913,24 @@ In more detail, we currently do not have any lifting theorem that would allow us
 \paragraph{Shared randomness.}
 The lower bounds also hold in the setting with shared randomness.
 
+\paragraph{Lifting via Supported LOCAL.}
+There is a totally different way to lift a round elimination sequence to a lower bound for LOCAL, which has been used in \cite{balliu-boudier-etal-2024-tight-lower-bounds-in-the,korhonen-paz-etal-2021-brief-announcement-sinkless} and uses ideas from \cite{brandt-chang-etal-2022-local-problems-on-trees-from-the}.
+This different way works as follows:
+\begin{itemize}
+    \item We first prove that round elimination also works in the so-called Supported LOCAL model. This has been done in \cite{balliu-boudier-etal-2024-tight-lower-bounds-in-the}. This model is like the LOCAL model, but nodes also know a supergraph of the graph in which they are in. For example, they may know a $2\Delta$-regular graph, meaning that they know the whole graph topology and the IDs of all the nodes, and they are promised that the graph in which they actually are is a $\Delta$-regular subgraph of this graph. 
+    \item This means that, if we get a sequence of length $k$ satisfying the requirements of \Cref{thm:newlifting}, where we also prove that the problem is non-trivial in this stronger setting (Supported LOCAL) we directly get a deterministic lower bound for this model.
+    \item Then, we use a known result that states that any randomized algorithm can be derandomized making its complexity at most exponentially worse. This allows us to convert a deterministic lower bound into an exponentially worse randomized lower bound \cite{balliu-boudier-etal-2024-tight-lower-bounds-in-the}.
+\end{itemize}
+Differently from the standard lifting theorem, this approach is not fully automatic. Let us compare the two approaches:
+\begin{itemize}
+    \item We produce a sequence $(\Pi_i)_{0\le i \le k}$ satisying that, for each $i < k$, $\re(\Pi_i)$ can be relaxed to $\Pi_{i+1}$.
+    \item We prove that $\Pi_k$ is non-trivial. 
+    \item We could now directly apply \Cref{thm:newlifting} to obtain deterministic and randomized lower bounds.
+    \item In order to apply this different approach, we still need to prove something stronger, that is, that $\Pi_k$ is non-trivial in the Supported LOCAL model.
+\end{itemize}
+The last point is what makes this approach not automatic. While determining whether a problem $\Pi$ is non-trivial in deterministic PN is very easy (it requires a mechanical check), determining whether $\Pi$ is non-trivial in Supported LOCAL is not so easy, because a $0$-round algorithm has access to the node ID, to the whole graph topology, and to the the ID assigment of the support graph. For example now it is not true that all nodes must produce the same output configuration.
+In \cite{balliu-boudier-etal-2024-tight-lower-bounds-in-the} an approach to tackle this task has been shown. Let $G$ be the support graph (which is the supergraph from which the actual graph comes from). It is possible to define a problem $\Pi'$ on $G$ as a function of $\Pi$ (which is a problem defined on the subgraphs taken from $G$), such that $\Pi$ can be solved in $0$ rounds in all graphs that come from $G$ if and only if there exists a solution for $\Pi'$ in $G$. Arguing that a problem does not admit any solution is conceptually easier than arguing that there is no $0$-round algorithms, and by following this approach, \cite{balliu-boudier-etal-2024-tight-lower-bounds-in-the} showed that many existing lower bounds obtained via round elimination hold also in Supported LOCAL.
+
 \chapter{Other Lower Bound Techniques}
 [TODO: Marks, KMW, indistinguishability, ...]
 
